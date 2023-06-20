@@ -10,3 +10,7 @@ https://rt-net.jp/mobility/archives/category/original/hashimoto-originalmouse
 - ハードウェア設計
 - 回路設計
 - 基板設計
+## ロードマップ
+https://github.com/users/ShunjiHashimoto/projects/4/views/1
+## タスク管理
+https://github.com/users/ShunjiHashimoto/projects/5/views/1
