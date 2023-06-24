@@ -1,17 +1,9 @@
 /Debug/
 /.settings/
-/Drivers/
+/Drivers
 /Core/Inc/
 /Core/Startup/
-.cproject
-.mxproject
-.project
-micro_tang.launch
-micro_tang Debug.launch
-STM32F405RGTX_FLASH.ld
-STM32F405RGTX_RAM.ld
-stm32f4xx_hal_msp.c
-stm32f4xx_it.c
-syscalls.c
-sysmem.c
-system_stm32f4xx.c
+/build
+/cmake
+*.json
+*.code-workspace
