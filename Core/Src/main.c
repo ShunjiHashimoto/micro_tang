@@ -177,19 +177,8 @@ int main(void)
   {
     sw0_state = HAL_GPIO_ReadPin(SW0_GPIO_Port,SW0_Pin);
     sw1_state = HAL_GPIO_ReadPin(SW1_GPIO_Port,SW1_Pin);
-	 // l_lightsensorCheck(LL_LED_Pin, 1); /* duration[ms] */
-    // r_lightsensorCheck(RR_LED_Pin, 1); /* duration[ms] */
-    // encoderCheck(encoder_r, encoder_l);
-    // if(sw0_state == 0){
-    //    motorRun(MotorR_TIM1_CH3_Pin, 0, Motor_Mode_Pin, TIM_CHANNEL_4, 50, 1000); /* duty, duration[ms] */
-    //    motorRun(MotorL_TIM1_CH1_Pin, 1, Motor_Mode_Pin, TIM_CHANNEL_2, 50, 1000); /* duty, duration[ms] */
-    // }
-    // if(sw1_state == 0){
-    //   motorStop(TIM_CHANNEL_4);
-    //   motorStop(TIM_CHANNEL_2);
-    // }
-    // phototranCheck(ADC_CHANNEL_11);
-    // uartCheck(uart_check_msg);
+	  // TODO: motorを初期化する、タイマーをある変数に渡して、それを使ってmotor.cppでその変数を使ってモータ回す
+    
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

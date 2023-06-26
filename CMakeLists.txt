@@ -7,7 +7,9 @@ include(cmake/st-project.cmake)
 add_executable(${PROJECT_NAME}
   ${PROJECT_SOURCE_DIR}/Core/Src/main.c
   ${PROJECT_SOURCE_DIR}/Application/Src/wrapper.cpp
-  ${PROJECT_SOURCE_DIR}/Application/Src/led.cpp)
+  ${PROJECT_SOURCE_DIR}/Application/Src/led.cpp
+  ${PROJECT_SOURCE_DIR}/Application/Src/drivers/motor.cpp
+  ${PROJECT_SOURCE_DIR}/Application/Src/pins/timers.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
   ${PROJECT_SOURCE_DIR}/Core/Inc

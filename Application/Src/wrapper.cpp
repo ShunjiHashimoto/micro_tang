@@ -6,11 +6,13 @@
  */
 #include "../../Application/Inc/wrapper.hpp"
 #include "../../Application/Inc/led.hpp"
+#include "../../Application/Inc/drivers/motor.hpp"
 
 extern "C" {
 void cpploop(void) {
-    LedBlink instance;
-
+    Motor instance;
+    
+    //TODO: 
     instance.toggle();
 }
 }
