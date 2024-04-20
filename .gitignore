@@ -1,9 +1,0 @@
-/Debug/
-/.settings/
-/Drivers
-/Core/Inc/
-/Core/Startup/
-/build
-/cmake
-*.json
-*.code-workspace
