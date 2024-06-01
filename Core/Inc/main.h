@@ -31,7 +31,8 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -73,6 +74,8 @@ void Error_Handler(void);
 #define EncoderR_TIM3_CH2_GPIO_Port GPIOA
 #define LL_LED_Pin GPIO_PIN_0
 #define LL_LED_GPIO_Port GPIOB
+#define SPI2_CS_Pin GPIO_PIN_12
+#define SPI2_CS_GPIO_Port GPIOB
 #define SW0_Pin GPIO_PIN_7
 #define SW0_GPIO_Port GPIOC
 #define SW1_Pin GPIO_PIN_8

@@ -1,0 +1,9 @@
+*.code_workspace
+*.o
+*.prefs
+*.mxproject
+*.elf
+*.list
+*.map
+Debug/*
+Drivers/*

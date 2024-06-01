@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "spi.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -28,6 +29,8 @@
 #include "led.hpp"
 #include "timers.hpp"
 #include "motor.hpp"
+#include "gyro.hpp"
+#include "stdio.h"
 
 /* USER CODE END Includes */
 
@@ -60,7 +63,10 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+extern "C" int __io_putchar(int ch) {
+    HAL_UART_Transmit(&huart3, (uint8_t *)&ch, 1, 100);
+    return ch;
+}
 /* USER CODE END 0 */
 
 /**
@@ -70,7 +76,8 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	LedBlink ledBlink;
+  LedBlink ledBlink;
+  Gyro gyro;
   Timers timers;
   Motor motor;
 
@@ -100,7 +107,10 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM4_Init();
   MX_TIM3_Init();
+  MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
+  setbuf(stdout, NULL);
+  gyro.init();
 
   /* USER CODE END 2 */
 
@@ -108,10 +118,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
     ledBlink.toggle();
-    motor.run(MotorR_TIM1_CH3_Pin, GPIO_PIN_SET, Motor_Mode_Pin, TIM_CHANNEL_4, 30);
-    // TODO:IMU、エンコーダのチェック→制御（ 一区画前進（台形加減速設定、目標速度の設定をタイマー割り込みでやる）→超信地旋回、、、）
+    HAL_Delay(100);
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
