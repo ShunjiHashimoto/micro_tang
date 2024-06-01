@@ -1,0 +1,5 @@
+../Core/Src/gyro.cpp:9:5:int __io_putchar(int)	16	static
+../Core/Src/gyro.cpp:14:9:uint8_t Gyro::readByte(uint8_t)	32	static
+../Core/Src/gyro.cpp:29:6:void Gyro::writeByte(uint8_t, uint8_t)	32	static
+../Core/Src/gyro.cpp:42:6:void Gyro::init()	24	static
+../Core/Src/gyro.cpp:73:6:void Gyro::update()	24	static

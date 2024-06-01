@@ -5,5 +5,3 @@
 *.elf
 *.list
 *.map
-Debug/*
-Drivers/*
