@@ -44,15 +44,15 @@ void Gyro::init() {
   
     HAL_Delay( 100 ); // wait start up
     who_am_i = readByte( WHO_AM_I ); // 1. read who am i 
-    printf( " rn0x%xrn\n", who_am_i ); // 2. check who am i value, 0xE0が帰ってくる
+    printf( " rn0x%xrn\n\r", who_am_i ); // 2. check who am i value, 0xE0が帰ってくる
     // 初回に失敗するときがあるので、もう一度動かしてみる
     HAL_Delay( 100 );
     who_am_i = readByte( WHO_AM_I );  
-    printf( " rn0x%xrn\n", who_am_i ); 
+    printf( " rn0x%xrn\n\r", who_am_i );
 
     // 2. error check
     if ( who_am_i != 0xE0 ){
-      printf( " gyro_errorr\n");
+      printf( " gyro_errorr\n\r");
       HAL_Delay(100);
     }
     printf("gyro startup");
@@ -77,7 +77,7 @@ void Gyro::update() {
     zout_l = readByte(0x38);
     int16_t gyro_raw = (((uint16_t)zout_h<<8)&0xff00)|zout_l;
     float gyro_ang_vel = (float)gyro_raw / 16.4;
-    printf(" gyro raw %f\n", gyro_ang_vel);
+    printf(" gyro raw %f\n\r", gyro_ang_vel);
     // ジャイロのセンサはオフセットを設定する
     // 0x37のアドレス、(指定しないまま送ると次のレジスタが送られる)
     // 0x37 0x00 0x00

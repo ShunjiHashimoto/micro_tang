@@ -26,11 +26,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "led.hpp"
-#include "timers.hpp"
-#include "motor.hpp"
-#include "gyro.hpp"
-#include "stdio.h"
 
 /* USER CODE END Includes */
 
@@ -63,17 +58,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-extern "C" int __io_putchar(int ch) {
-    HAL_UART_Transmit(&huart3, (uint8_t *)&ch, 1, 100);
-    return ch;
-}
-int16_t encoderCheck(int16_t encoder_r, int16_t encoder_l){
-	 encoder_l = __HAL_TIM_GET_COUNTER(&htim2);
-	 encoder_r = __HAL_TIM_GET_COUNTER(&htim3);
-	 printf("Encoder Value: r:%d l:%d\n\r", encoder_r, encoder_l);
-	 return encoder_r, encoder_l;
-	 // global変数で定義して、データを見れる
- }
+
 /* USER CODE END 0 */
 
 /**
@@ -83,10 +68,6 @@ int16_t encoderCheck(int16_t encoder_r, int16_t encoder_l){
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  LedBlink ledBlink;
-  Gyro gyro;
-  Timers timers;
-  Motor motor;
 
   /* USER CODE END 1 */
 
@@ -116,12 +97,6 @@ int main(void)
   MX_TIM3_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-  setbuf(stdout, NULL);
-  gyro.init();
-  int16_t encoder_r = 0;
-  int16_t encoder_l = 0;
-  HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL); // 左車輪のエンコーダのカウントスタート
-  HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL); // 右車輪のエンコーダのカウントスタート
 
   /* USER CODE END 2 */
 
@@ -129,9 +104,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    ledBlink.toggle();
-    HAL_Delay(100);
-    encoderCheck(encoder_r, encoder_l);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

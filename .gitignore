@@ -5,10 +5,6 @@
 *.elf
 *.list
 *.map
-.cproject
-Debug/micro_tang.elf
-Debug/micro_tang.list
-Debug/micro_tang.map
-Debug/Core/Src/main.cyclo
-Debug/Core/Src/main.o
-Debug/Core/Src/main.su
+*.cproject
+*.cyclo
+*.su
