@@ -41,7 +41,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+int16_t encoder_l = 0;
+int16_t encoder_r = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -208,10 +209,15 @@ void TIM4_IRQHandler(void)
   /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM4_IRQn 1 */
+  encoderCounter();
 
   /* USER CODE END TIM4_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
+void encoderCounter(){
+	encoder_l = __HAL_TIM_GET_COUNTER(&htim2);
+	encoder_r = __HAL_TIM_GET_COUNTER(&htim3);
+}
 
 /* USER CODE END 1 */

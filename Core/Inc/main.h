@@ -33,10 +33,14 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include <string.h>
+#include "tim.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+extern int16_t encoder_r;
+extern int16_t encoder_l;
+void encoderCounter();
 
 /* USER CODE END ET */
 
