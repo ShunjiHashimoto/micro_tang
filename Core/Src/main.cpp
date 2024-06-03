@@ -66,6 +66,11 @@ extern "C" int __io_putchar(int ch) {
     HAL_UART_Transmit(&huart3, (uint8_t *)&ch, 1, 100);
     return ch;
 }
+void hal_timer_init(void) {
+  HAL_TIM_Base_Start_IT(&htim4); // 割り込み処理開始
+  HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL); // 左車輪のエンコーダのカウントスタート
+  HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL); // 右車輪のエンコーダのカウントスタート
+}
 /* USER CODE END 0 */
 
 /**
@@ -108,11 +113,9 @@ int main(void)
   MX_TIM3_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-  setbuf(stdout, NULL);
+  setbuf(stdout, NULL); // std::outのバッファリングを無効にし、ログを即出力する
   gyro.init();
-  HAL_TIM_Base_Start_IT(&htim4);
-  HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL); // 左車輪のエンコーダのカウントスタート
-  HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL); // 右車輪のエンコーダのカウントスタート
+  hal_timer_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -120,7 +123,7 @@ int main(void)
   while (1){
     ledBlink.toggle();
     HAL_Delay(100);
-	 printf("Encoder Value: r:%d l:%d\n\r", encoder_r, encoder_l);
+	  printf("Encoder Value: r:%d l:%d\n\r", encoder_r, encoder_l);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -175,7 +178,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
 /* USER CODE END 4 */
 
 /**

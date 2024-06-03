@@ -41,6 +41,7 @@ extern "C" {
 extern int16_t encoder_r;
 extern int16_t encoder_l;
 void encoderCounter();
+void hal_timer_init();
 
 /* USER CODE END ET */
 
