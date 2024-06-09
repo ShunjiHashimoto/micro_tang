@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_it.h"
+#include "encoder.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -41,8 +42,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-int16_t encoder_l = 0;
-int16_t encoder_r = 0;
+Encoder encoder_r;
+Encoder encoder_l;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -209,15 +210,11 @@ void TIM4_IRQHandler(void)
   /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM4_IRQn 1 */
-  encoderCounter();
-
+  Encoder_Update(&encoder_l, __HAL_TIM_GET_COUNTER(&htim2));
+  Encoder_Update(&encoder_r, __HAL_TIM_GET_COUNTER(&htim3));
   /* USER CODE END TIM4_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
-void encoderCounter(){
-	encoder_l = __HAL_TIM_GET_COUNTER(&htim2);
-	encoder_r = __HAL_TIM_GET_COUNTER(&htim3);
-}
 
 /* USER CODE END 1 */

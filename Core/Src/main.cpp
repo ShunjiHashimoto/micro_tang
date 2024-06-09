@@ -23,6 +23,9 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+extern "C" {
+  #include "encoder.h"
+}
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -66,10 +69,11 @@ extern "C" int __io_putchar(int ch) {
     HAL_UART_Transmit(&huart3, (uint8_t *)&ch, 1, 100);
     return ch;
 }
-void hal_timer_init(void) {
+void encoder_init(void) {
   HAL_TIM_Base_Start_IT(&htim4); // 割り込み処理開始
-  HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL); // 左車輪のエンコーダのカウントスタート
-  HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL); // 右車輪のエンコーダのカウントスタート
+  // タイヤ一回転あたりのパルス数：4096*4*(43/13) = 54193.2..
+  Encoder_Init(&encoder_l, &htim2, 54193, true);
+  Encoder_Init(&encoder_r, &htim3, 54193, false);
 }
 /* USER CODE END 0 */
 
@@ -115,7 +119,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   setbuf(stdout, NULL); // std::outのバッファリングを無効にし、ログを即出力する
   gyro.init();
-  hal_timer_init();
+  encoder_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -123,7 +127,9 @@ int main(void)
   while (1){
     ledBlink.toggle();
     HAL_Delay(100);
-	  printf("Encoder Value: r:%d l:%d\n\r", encoder_r, encoder_l);
+    printf("Encoder Value: l:%d r:%d, Rotation Num: l: %d r:%d\n\r",
+            encoder_l.total_pulse, encoder_r.total_pulse, 
+            Encoder_GetRotationCount(&encoder_l), Encoder_GetRotationCount(&encoder_r));
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
