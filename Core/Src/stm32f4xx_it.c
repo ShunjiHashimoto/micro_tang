@@ -212,6 +212,9 @@ void TIM4_IRQHandler(void)
   /* USER CODE BEGIN TIM4_IRQn 1 */
   Encoder_Update(&encoder_l, __HAL_TIM_GET_COUNTER(&htim2));
   Encoder_Update(&encoder_r, __HAL_TIM_GET_COUNTER(&htim3));
+  // TODO: Encoder_Update関数の中にタイマリセットも書く
+  __HAL_TIM_SET_COUNTER(&htim2, (__HAL_TIM_GET_AUTORELOAD(&htim2)+1)/2); // タイマをリセット
+  __HAL_TIM_SET_COUNTER(&htim3, (__HAL_TIM_GET_AUTORELOAD(&htim3)+1)/2); // タイマをリセット
   /* USER CODE END TIM4_IRQn 1 */
 }
 

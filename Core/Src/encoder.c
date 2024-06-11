@@ -14,7 +14,6 @@ void Encoder_Init(Encoder* encoder, TIM_HandleTypeDef* htim_x, int32_t one_rotat
 void Encoder_Update(Encoder* encoder, uint32_t cur_pulse) {
     encoder->delta_pulse = encoder->initial_pulse_count - cur_pulse;
     encoder->total_pulse += (encoder->forward_wise ? encoder->delta_pulse : -encoder->delta_pulse);
-    __HAL_TIM_SET_COUNTER(encoder->htim_x, encoder->initial_pulse_count); // タイマをリセット
 }
 
 int32_t Encoder_GetDeltaPulse(const Encoder* encoder) {
