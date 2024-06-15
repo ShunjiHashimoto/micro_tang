@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "tim.h"
+#include "math.h"
 
 typedef struct {
     int32_t delta_pulse;
@@ -11,6 +12,8 @@ typedef struct {
     TIM_HandleTypeDef* htim_x;
     int32_t one_rotation_pulse;
     uint32_t initial_pulse_count;
+    float rad_per_rotation;
+    float motor_vel;
     bool forward_wise;
 } Encoder;
 

@@ -23,16 +23,17 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-extern "C" {
-  #include "encoder.h"
-}
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+extern "C" {
+  #include "encoder.h"
+}
 #include "led.hpp"
 #include "timers.hpp"
 #include "motor.hpp"
 #include "gyro.hpp"
+#include "params.hpp"
 
 /* USER CODE END Includes */
 
@@ -87,7 +88,9 @@ int main(void)
   LedBlink ledBlink;
   Gyro gyro;
   Timers timers;
-  Motor motor;
+  // 参照渡しの場合は、htim1は直接渡す
+  Motor motor_l(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorL_TIM1_CH1_Pin, TIM_CHANNEL_2, -1);
+  Motor motor_r(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorR_TIM1_CH3_Pin, TIM_CHANNEL_4, 1);
 
   /* USER CODE END 1 */
 
@@ -116,20 +119,41 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM3_Init();
   MX_SPI2_Init();
+  MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
   setbuf(stdout, NULL); // std::outのバッファリングを無効にし、ログを即出力する
   gyro.init();
   encoder_init();
+  float adc_bat = 0.0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  float linear_vel = 0.1; // [m/s]
+  float angular_vel = 50.0;
+  float a = 18;
+  float w_r = motor_r.calcMotorSpeed(linear_vel, angular_vel);
+  float w_l = motor_l.calcMotorSpeed(linear_vel, angular_vel);
+  float vel = linear_vel + (MotorParam::TREAD_WIDTH/2)*angular_vel;
+  float w = (vel/MotorParam::r)*MotorParam::GEAR_RATIO*(60/2*M_PI);
+  float torque = (MotorParam::m*a*MotorParam::r)/MotorParam::GEAR_RATIO;
   while (1){
     ledBlink.toggle();
     HAL_Delay(100);
-    printf("Encoder Value: l:%d r:%d, Rotation Num: l: %d r:%d\n\r",
+    HAL_ADC_Start(&hadc2);
+    HAL_ADC_PollForConversion(&hadc2, 1000);
+    adc_bat = HAL_ADC_GetValue(&hadc2) * MotorParam::BAT_RATIO;
+    float duty_r = 100*(MotorParam::R*torque/MotorParam::Kt + MotorParam::Ke*w_r)/adc_bat;
+    float duty_l = 100*(MotorParam::R*torque/MotorParam::Kt + MotorParam::Ke*w_l)/adc_bat;
+
+    printf("Battery Voltage: %lf\n\r", adc_bat); 
+    printf("Encoder Value: l:%d r:%d, Rotation Num: l: %d r:%d, Rotation Vel: l: %lf r: %lf\n\r",
             encoder_l.total_pulse, encoder_r.total_pulse, 
-            Encoder_GetRotationCount(&encoder_l), Encoder_GetRotationCount(&encoder_r));
+            Encoder_GetRotationCount(&encoder_l), Encoder_GetRotationCount(&encoder_r),
+            encoder_l.motor_vel, encoder_r.motor_vel);
+    printf("w_r: %lf, w_l: %lf, torque: %lf, duty: r: %lf, l: %lf\n\r", w_r, w_l, torque, duty_r, duty_l);
+    // motor_r.run(GPIO_PIN_RESET, duty_r);
+    // motor_l.run(GPIO_PIN_SET, duty_l); 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
