@@ -24,6 +24,8 @@ public:
     Motor(TIM_HandleTypeDef &htim_x, uint16_t mode_channel, GPIO_PinState mode, uint16_t direction_channel, uint16_t duty_channel, int16_t left_or_right);
 
     float calcMotorSpeed(float linear_vel, float angular_vel);
+    static float linearVelocityPIDControl(float target_v, float current_v, float &pid_error_sum);
+    static float angularVelocityPIDControl(float target_w, float current_w, float &pid_error_sum);
 
     /**
      * @brief モーター制御関数

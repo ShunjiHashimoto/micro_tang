@@ -18,6 +18,24 @@ float Motor::calcMotorSpeed(float linear_vel, float angular_vel){
     return w;
 }
 
+float Motor::linearVelocityPIDControl(float target_v, float current_v, float &pid_error_sum){
+    // float pid_error = LinearVelocityPID::Kp*(target_v - current_v) + LinearVelocityPID::Ki*pid_error_sum + LinearVelocityPID::Kd*(target_v-current_v)/(MotorParam::RATE/1000);
+    float pid_error = LinearVelocityPID::Kp*(target_v - current_v)+ LinearVelocityPID::Ki*pid_error_sum;
+    // if(pid_error_sum < LinearVelocityPID::MAX_PID_ERROR_SUM) {
+    pid_error_sum += pid_error;
+    // }
+    return target_v - pid_error;
+}
+
+float Motor::angularVelocityPIDControl(float target_w, float current_w, float &pid_error_sum){
+    // float pid_error = AngularVelocityPID::Kp*(target_w - current_w) + AngularVelocityPID::Ki*pid_error_sum + AngularVelocityPID::Kd*(target_w - current_w)/(MotorParam::RATE/1000);
+    float pid_error = AngularVelocityPID::Kp*(target_w - current_w)+ AngularVelocityPID::Ki*pid_error_sum;
+    // if(pid_error_sum < AngularVelocityPID::MAX_PID_ERROR_SUM) {
+    pid_error_sum += pid_error;
+    // }
+    return target_w - pid_error;
+}
+
 void Motor::run(GPIO_PinState direction, int duty) {
     HAL_GPIO_WritePin(GPIOA, mode_channel, mode);
     HAL_GPIO_WritePin(GPIOA, direction_channel, direction);

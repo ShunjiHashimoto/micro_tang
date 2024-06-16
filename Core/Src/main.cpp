@@ -129,20 +129,25 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  float linear_vel = 0.1; // [m/s]
-  float angular_vel = 50.0;
+  float target_vel = 1.0; // [m/s]
+  float target_w = 0.0;
   float a = 18;
-  float w_r = motor_r.calcMotorSpeed(linear_vel, angular_vel);
-  float w_l = motor_l.calcMotorSpeed(linear_vel, angular_vel);
-  float vel = linear_vel + (MotorParam::TREAD_WIDTH/2)*angular_vel;
-  float w = (vel/MotorParam::r)*MotorParam::GEAR_RATIO*(60/2*M_PI);
+  float w_r = motor_r.calcMotorSpeed(target_vel, target_w); // [rpm]
+  float w_l = motor_l.calcMotorSpeed(target_vel, target_w); // [rpm]
   float torque = (MotorParam::m*a*MotorParam::r)/MotorParam::GEAR_RATIO;
+  float vel_pid_error_sum = 0.0;
+  float w_pid_error_sum = 0.0;
   while (1){
     ledBlink.toggle();
-    HAL_Delay(100);
+    HAL_Delay(MotorParam::RATE);
     HAL_ADC_Start(&hadc2);
     HAL_ADC_PollForConversion(&hadc2, 1000);
     adc_bat = HAL_ADC_GetValue(&hadc2) * MotorParam::BAT_RATIO;
+    float current_v = (encoder_r.motor_vel*MotorParam::r + encoder_l.motor_vel*MotorParam::r)/2;
+    float current_w = (encoder_r.motor_vel*MotorParam::r + encoder_l.motor_vel*MotorParam::r)/MotorParam::TREAD_WIDTH;
+    float linear_vel = Motor::linearVelocityPIDControl(target_vel, current_v, vel_pid_error_sum);
+    float angular_vel = Motor::angularVelocityPIDControl(target_w, current_w, w_pid_error_sum);
+    printf("pid_error_sum %lf , w %lf\n\r", vel_pid_error_sum, w_pid_error_sum);
     float duty_r = 100*(MotorParam::R*torque/MotorParam::Kt + MotorParam::Ke*w_r)/adc_bat;
     float duty_l = 100*(MotorParam::R*torque/MotorParam::Kt + MotorParam::Ke*w_l)/adc_bat;
 
@@ -151,9 +156,12 @@ int main(void)
             encoder_l.total_pulse, encoder_r.total_pulse, 
             Encoder_GetRotationCount(&encoder_l), Encoder_GetRotationCount(&encoder_r),
             encoder_l.motor_vel, encoder_r.motor_vel);
-    printf("w_r: %lf, w_l: %lf, torque: %lf, duty: r: %lf, l: %lf\n\r", w_r, w_l, torque, duty_r, duty_l);
-    // motor_r.run(GPIO_PIN_RESET, duty_r);
-    // motor_l.run(GPIO_PIN_SET, duty_l); 
+    // printf("w_r: %lf, w_l: %lf, torque: %lf, duty: r: %lf, l: %lf\n\r", 
+    //         w_r, w_l, torque, duty_r, duty_l);
+    printf("cur_v %lf tar_v %lf   , cur_w %lf tar_w %lf\n\r", current_v, linear_vel, current_w, angular_vel);
+
+    motor_r.run(GPIO_PIN_RESET, duty_r);
+    motor_l.run(GPIO_PIN_SET, duty_l); 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
