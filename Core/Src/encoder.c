@@ -7,7 +7,7 @@ void Encoder_Init(Encoder* encoder, TIM_HandleTypeDef* htim_x, int32_t one_rotat
     encoder->forward_wise = cw;
     encoder->one_rotation_pulse = one_rotation_pulse;
     encoder->rad_per_rotation = 2*M_PI / one_rotation_pulse;
-    encoder->motor_vel = 0.0; // [rad/s]
+    encoder->rotation_speed = 0.0; // [rad/s]
     encoder->initial_pulse_count = (__HAL_TIM_GET_AUTORELOAD(htim_x)+1)/2; // 必要に応じて初期値を設定
     __HAL_TIM_SET_COUNTER(encoder->htim_x, encoder->initial_pulse_count); // タイマをリセット
     HAL_TIM_Encoder_Start_IT(encoder->htim_x, TIM_CHANNEL_ALL); // 左車輪のエンコーダのカウントスタート
@@ -16,7 +16,7 @@ void Encoder_Init(Encoder* encoder, TIM_HandleTypeDef* htim_x, int32_t one_rotat
 void Encoder_Update(Encoder* encoder, uint32_t cur_pulse) {
     encoder->delta_pulse = -encoder->initial_pulse_count + cur_pulse;
     encoder->total_pulse += (encoder->forward_wise ? -encoder->delta_pulse : encoder->delta_pulse);
-    encoder->motor_vel = (encoder->forward_wise ? 
+    encoder->rotation_speed = (encoder->forward_wise ? 
     (-encoder->delta_pulse * encoder->rad_per_rotation)/0.001: (encoder->delta_pulse * encoder->rad_per_rotation)/0.001);
 }
 

@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "encoder.h"
+#include "gyro.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,6 +45,7 @@
 /* USER CODE BEGIN PV */
 Encoder encoder_r;
 Encoder encoder_l;
+Gyro gyro;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -215,6 +217,7 @@ void TIM4_IRQHandler(void)
   // TODO: Encoder_Update関数の中にタイマリセットも書く
   __HAL_TIM_SET_COUNTER(&htim2, (__HAL_TIM_GET_AUTORELOAD(&htim2)+1)/2); // タイマをリセット
   __HAL_TIM_SET_COUNTER(&htim3, (__HAL_TIM_GET_AUTORELOAD(&htim3)+1)/2); // タイマをリセット
+  Gyro_Update(&gyro);
   /* USER CODE END TIM4_IRQn 1 */
 }
 

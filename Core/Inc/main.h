@@ -35,6 +35,7 @@ extern "C" {
 #include <string.h>
 #include <stdbool.h>
 #include "tim.h"
+#include "math.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

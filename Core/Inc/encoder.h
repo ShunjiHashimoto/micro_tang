@@ -13,7 +13,7 @@ typedef struct {
     int32_t one_rotation_pulse;
     uint32_t initial_pulse_count;
     float rad_per_rotation;
-    float motor_vel;
+    float rotation_speed;
     bool forward_wise;
 } Encoder;
 

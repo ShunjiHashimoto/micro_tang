@@ -9,7 +9,6 @@
 #define INC_DRIVERS_MOTOR_HPP_
 #include "main.h"
 #include "params.hpp"
-#include "timers.hpp"
 #include "tim.h"
 
 class Motor {
@@ -23,9 +22,9 @@ public:
     */
     Motor(TIM_HandleTypeDef &htim_x, uint16_t mode_channel, GPIO_PinState mode, uint16_t direction_channel, uint16_t duty_channel, int16_t left_or_right);
 
-    float calcMotorSpeed(float linear_vel, float angular_vel);
-    static float linearVelocityPIDControl(float target_v, float current_v, float &pid_error_sum);
-    static float angularVelocityPIDControl(float target_w, float current_w, float &pid_error_sum);
+    float calcMotorSpeed(float calculated_linear_vel, float calculated_angular_vel);
+    static float linearVelocityPIDControl(float target_linear_vel, float current_linear_vel, float &pid_error_sum);
+    static float angularVelocityPIDControl(float target_angular_vel, float current_angular_vel, float &pid_error_sum);
 
     /**
      * @brief モーター制御関数
