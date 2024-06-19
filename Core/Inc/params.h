@@ -6,6 +6,6 @@
 #define GYRO_CONFIG_1 0x01
 
 #define SENSITIVITY_SCALE_FACTOR 16.4 
-#define GYRO_OFFSET = 2.558
+#define GYRO_OFFSET 2.558
 
 #endif

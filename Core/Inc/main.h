@@ -68,6 +68,8 @@ void Error_Handler(void);
 #define RR_ADC1_GPIO_Port GPIOC
 #define RF_LED_Pin GPIO_PIN_2
 #define RF_LED_GPIO_Port GPIOC
+#define RF_ADC1_Pin GPIO_PIN_3
+#define RF_ADC1_GPIO_Port GPIOC
 #define EncoderL_TIM2_CH1_Pin GPIO_PIN_0
 #define EncoderL_TIM2_CH1_GPIO_Port GPIOA
 #define EncoderL_TIM2_CH2_Pin GPIO_PIN_1
@@ -76,8 +78,14 @@ void Error_Handler(void);
 #define EncoderR_TIM3_CH1_GPIO_Port GPIOA
 #define EncoderR_TIM3_CH2_Pin GPIO_PIN_7
 #define EncoderR_TIM3_CH2_GPIO_Port GPIOA
+#define LF_LED_Pin GPIO_PIN_4
+#define LF_LED_GPIO_Port GPIOC
+#define LF_ADC1_Pin GPIO_PIN_5
+#define LF_ADC1_GPIO_Port GPIOC
 #define LL_LED_Pin GPIO_PIN_0
 #define LL_LED_GPIO_Port GPIOB
+#define LL_ADC1_Pin GPIO_PIN_1
+#define LL_ADC1_GPIO_Port GPIOB
 #define SPI2_CS_Pin GPIO_PIN_12
 #define SPI2_CS_GPIO_Port GPIOB
 #define SW0_Pin GPIO_PIN_7
@@ -96,6 +104,8 @@ void Error_Handler(void);
 #define MotorR_TIM1_CH4_GPIO_Port GPIOA
 #define Motor_Mode_Pin GPIO_PIN_12
 #define Motor_Mode_GPIO_Port GPIOA
+#define BAT_LED_Pin GPIO_PIN_8
+#define BAT_LED_GPIO_Port GPIOB
 #define Debug_LED_Pin GPIO_PIN_9
 #define Debug_LED_GPIO_Port GPIOB
 
