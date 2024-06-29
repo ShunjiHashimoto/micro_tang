@@ -8,6 +8,14 @@
 #include "motor.hpp"
 #include "math.h"
 
+Motor hoge_motor(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorL_TIM1_CH1_Pin, TIM_CHANNEL_2, -1);
+
+extern "C" {
+void hoge(void){
+	hoge_motor.hoge_val += 1;
+}
+}
+
 Motor::Motor(TIM_HandleTypeDef &htim_x, uint16_t mode_channel, GPIO_PinState mode, uint16_t direction_channel, uint16_t duty_channel, int16_t left_or_right)
     : htim_x(htim_x), mode_channel(mode_channel), mode(mode), direction_channel(direction_channel), duty_channel(duty_channel), left_or_right(left_or_right) {
 }

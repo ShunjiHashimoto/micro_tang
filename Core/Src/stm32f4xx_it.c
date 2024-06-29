@@ -24,6 +24,8 @@
 /* USER CODE BEGIN Includes */
 #include "encoder.h"
 #include "gyro.h"
+
+extern void hoge(void);
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -218,6 +220,8 @@ void TIM4_IRQHandler(void)
   __HAL_TIM_SET_COUNTER(&htim2, (__HAL_TIM_GET_AUTORELOAD(&htim2)+1)/2); // タイマをリセット
   __HAL_TIM_SET_COUNTER(&htim3, (__HAL_TIM_GET_AUTORELOAD(&htim3)+1)/2); // タイマをリセット
   Gyro_Update(&gyro);
+
+  hoge(); // Motor classが書かれたヘッダファイルをinclude
   /* USER CODE END TIM4_IRQn 1 */
 }
 
