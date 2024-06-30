@@ -26,13 +26,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-extern "C" {
-  #include "encoder.h"
-  #include "gyro.h"
-}
 #include "led.hpp"
 #include "motor.hpp"
-#include "params.hpp"
+// #include "params.hpp"
+#include "log.hpp"
+extern Motor motor_l;
+extern Motor motor_r;
 
 /* USER CODE END Includes */
 
@@ -71,9 +70,15 @@ extern "C" int __io_putchar(int ch) {
 }
 void encoder_init(void) {
   HAL_TIM_Base_Start_IT(&htim4); // 割り込み処理開始
-  // タイヤ一回転あたりのパルス数：4096*4*(43/13) = 54193.2..
-  Encoder_Init(&encoder_l, &htim2, 54193, true);
-  Encoder_Init(&encoder_r, &htim3, 54193, false);
+  HAL_TIM_Base_Start_IT(&htim5); // 割り込み処理開始
+  Encoder_Init(&encoder_l, &htim2, MotorParam::PULSE_PER_TIRE_ONEROTATION, true);
+  Encoder_Init(&encoder_r, &htim3, MotorParam::PULSE_PER_TIRE_ONEROTATION, false);
+}
+void updateBattery(){
+  // バッテリー電圧の取得
+  HAL_ADC_Start(&hadc2);
+  HAL_ADC_PollForConversion(&hadc2, 1000);
+  Battery::adc_bat = HAL_ADC_GetValue(&hadc2) * MotorParam::BAT_RATIO;
 }
 /* USER CODE END 0 */
 
@@ -85,10 +90,10 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   LedBlink ledBlink;
-  // Gyro gyro;
+  Log log;
   // 参照渡しの場合は、htim1は直接渡す
-  Motor motor_l(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorL_TIM1_CH1_Pin, TIM_CHANNEL_2, -1);
-  Motor motor_r(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorR_TIM1_CH3_Pin, TIM_CHANNEL_4, 1);
+  // Motor motor_l(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorL_TIM1_CH1_Pin, TIM_CHANNEL_2, -1);
+  // Motor motor_r(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorR_TIM1_CH3_Pin, TIM_CHANNEL_4, 1);
 
   /* USER CODE END 1 */
 
@@ -118,6 +123,8 @@ int main(void)
   MX_TIM3_Init();
   MX_SPI2_Init();
   MX_ADC2_Init();
+  MX_TIM5_Init();
+  MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
   setbuf(stdout, NULL); // std::outのバッファリングを無効にし、ログを即出力する
   Gyro_Init(&gyro);
@@ -127,36 +134,29 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   uint8_t sw0_state = 1; 
-  float adc_bat = 0.0;
-  float target_linear_vel = 0.01; // [m/s]
-  float target_angular_vel = 0.5;
-  float a = 18;
-  float torque = (MotorParam::m*a*MotorParam::r)/MotorParam::GEAR_RATIO;
-  float vel_pid_error_sum = 0.0;
-  float w_pid_error_sum = 0.0;
+  uint8_t sw1_state = 1;
+  // float adc_bat = 0.0;
+  // float vel_pid_error_sum = 0.0;
+  // float w_pid_error_sum = 0.0;
   while (1){
+	  // printf("hoge: %d" ,hoge_motor.hoge_val);
     // Lチカ
     ledBlink.toggle();
-    // IMU
-    // gyro.update();
     // sw状態の確認
-    if(sw0_state != 0) sw0_state = HAL_GPIO_ReadPin(SW0_GPIO_Port,SW0_Pin);
-    // バッテリー電圧の取得
-    HAL_ADC_Start(&hadc2);
-    HAL_ADC_PollForConversion(&hadc2, 1000);
-    adc_bat = HAL_ADC_GetValue(&hadc2) * MotorParam::BAT_RATIO;
-    if(sw0_state == 0) {
+    if(sw0_state != 0) sw0_state = HAL_GPIO_ReadPin(SW0_GPIO_Port, SW0_Pin);
+    if(sw1_state != 0) sw1_state = HAL_GPIO_ReadPin(SW1_GPIO_Port, SW1_Pin);
+    if(sw0_state == 0 && sw1_state == 1) {
       // 速度制御
-      float current_linear_vel     = (MotorParam::r*(encoder_r.rotation_speed) + MotorParam::r*(encoder_l.rotation_speed))/2.0;
-      float current_angular_vel    = gyro.ang_vel*0.09*M_PI/180;
-      float calculated_linear_vel  = Motor::linearVelocityPIDControl(target_linear_vel, current_linear_vel, vel_pid_error_sum);
-      float calculated_angular_vel = Motor::angularVelocityPIDControl(target_angular_vel, current_angular_vel, w_pid_error_sum);
-      float rotation_speed_r       = motor_r.calcMotorSpeed(calculated_linear_vel, calculated_angular_vel); // [rpm]
-      float rotation_speed_l       = motor_l.calcMotorSpeed(calculated_linear_vel, calculated_angular_vel); // [rpm]
-      float duty_r = 100*(MotorParam::R*torque/MotorParam::Kt + MotorParam::Ke*rotation_speed_r)/adc_bat;
-      float duty_l = 100*(MotorParam::R*torque/MotorParam::Kt + MotorParam::Ke*rotation_speed_l)/adc_bat;
-      motor_r.run(GPIO_PIN_RESET, duty_r);
-      motor_l.run(GPIO_PIN_SET, duty_l); 
+      // float current_linear_vel     = (MotorParam::r*(encoder_r.rotation_speed) + MotorParam::r*(encoder_l.rotation_speed))/2.0;
+      // float current_angular_vel    = gyro.angular_vel*GYRO_GAIN*M_PI/180;
+      // float calculated_linear_vel  = Motor::linearVelocityPIDControl(target_linear_vel, current_linear_vel, vel_pid_error_sum);
+      // float calculated_angular_vel = Motor::angularVelocityPIDControl(target_angular_vel, current_angular_vel, w_pid_error_sum);
+      // float rotation_speed_r       = motor_r.calcMotorSpeed(calculated_linear_vel, calculated_angular_vel); // [rpm]
+      // float rotation_speed_l       = motor_l.calcMotorSpeed(calculated_linear_vel, calculated_angular_vel); // [rpm]
+      // float duty_r = 100*(MotorParam::R*torque/MotorParam::Kt + MotorParam::Ke*rotation_speed_r)/adc_bat;
+      // float duty_l = 100*(MotorParam::R*torque/MotorParam::Kt + MotorParam::Ke*rotation_speed_l)/adc_bat;
+      // motor_r.run(GPIO_PIN_RESET, duty_r);
+      // motor_l.run(GPIO_PIN_SET, duty_l); 
       // ログ
       // printf("pid_error_sum %lf , w %lf\n\r", vel_pid_error_sum, w_pid_error_sum);
       // printf("Battery Voltage: %lf\n\r", adc_bat); 
@@ -165,13 +165,22 @@ int main(void)
       //         encoder_l.rotation_speed, encoder_r.rotation_speed);
       // printf("rotation_speed_r: %lf, rotation_speed_l: %lf, torque: %lf, duty: r: %lf, l: %lf\n\r", 
       //         rotation_speed_r, rotation_speed_l, torque, duty_r, duty_l);
-      // TODO IMUを使ったPID制御の実装とリファクタリングとバッテリーケーブルの修理
-      // メモリスト、C言語とC++で参照渡しが異なる。エンコーダ、IMUのグローバル変数の見直し
-      // IMUが-2000~2000だったので、-180~180にするために0.90をかけた
-      // PID制御の+pid_error, I成分はtarget-currentで、pid_errorを足し合わせるものではない
-      printf("cur_vel %lf tar_vel %lf , cur_w %lf tar_w %lf\n\r", current_linear_vel, calculated_linear_vel, current_angular_vel, calculated_angular_vel);
+      // TODO IMUを使ったPID制御の実装
+      LinearVelocityPID::target_linear_vel = 0.4;
+      printf("cur_vel %lf tar_vel %lf\n\r", LinearVelocityPID::current_linear_vel, LinearVelocityPID::target_linear_vel);
+      // printf("%lf, %lf ,%lf, %lf\n\r", target_linear_vel, current_linear_vel, target_linear_vel - current_linear_vel, calculated_linear_vel);
+      // std::vector<float> log_linear_vel = {LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel};
+      // log.saveLog(log_linear_vel);
     }
-    // printf("gyro vel: %lf yaw deg: %lf\n\r", gyro.ang_vel*0.09*M_PI/180, gyro.yaw_deg*0.09);
+    else if(sw1_state == 0) {
+      LinearVelocityPID::target_linear_vel = 0.0;
+      motor_r.run(GPIO_PIN_RESET, 0);
+      motor_l.run(GPIO_PIN_RESET, 0);
+      printf("logging mode");
+      // log.printLog();
+      break;
+    }
+    // printf("gyro vel: %lf yaw deg: %lf\n\r", gyro.angular_vel*0.09*M_PI/180, gyro.yaw_deg*0.09);
     HAL_Delay(MotorParam::RATE);
     /* USER CODE END WHILE */
 

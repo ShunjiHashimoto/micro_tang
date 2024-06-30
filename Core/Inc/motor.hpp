@@ -5,11 +5,16 @@
  *      Author: hashimoto
  */
 
-#ifndef INC_DRIVERS_MOTOR_HPP_
-#define INC_DRIVERS_MOTOR_HPP_
+#ifndef INC_MOTOR_HPP
+#define INC_MOTOR_HPP
 #include "main.h"
 #include "params.hpp"
 #include "tim.h"
+#include "math.h"
+#include "encoder.h"
+#include "gyro.h"
+
+//void hoge(void);
 
 class Motor {
 public:
@@ -42,4 +47,4 @@ private:
     int16_t left_or_right;
 };
 
-#endif /* INC_DRIVERS_MOTOR_HPP_ */
+#endif /* INC_MOTOR_HPP_ */

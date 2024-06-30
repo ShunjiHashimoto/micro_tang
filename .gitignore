@@ -10,4 +10,5 @@
 *.su
 *.d
 *.mk
+memo.md
 makefile

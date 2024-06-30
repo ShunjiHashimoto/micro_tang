@@ -9,8 +9,8 @@
 #include "params.h"
 
 typedef struct {
-    float ang_vel;
-    float yaw_deg;
+    float angular_vel; // [rad/s]
+    float yaw_deg; // [rad]
 } Gyro;
 
 uint8_t Gyro_ReadByte(uint8_t reg);

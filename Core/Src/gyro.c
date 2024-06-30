@@ -35,7 +35,7 @@ void Gyro_WriteByte(uint8_t reg, uint8_t data)
 }
 
 void Gyro_Init(Gyro* gyro_) {
-    gyro_->ang_vel = 0.0;
+    gyro_->angular_vel = 0.0;
     gyro_->yaw_deg = 0.0;
     uint8_t who_am_i;
   
@@ -73,7 +73,7 @@ void Gyro_Update(Gyro* gyro_) {
     zout_h = Gyro_ReadByte(0x37);
     zout_l = Gyro_ReadByte(0x38);
     int16_t gyro_raw = (((uint16_t)zout_h<<8)&0xff00)|zout_l;
-    gyro_->ang_vel = GYRO_OFFSET + (float)gyro_raw / SENSITIVITY_SCALE_FACTOR;
-    gyro_->yaw_deg += gyro_->ang_vel * 0.001;
+    gyro_->angular_vel = GYRO_OFFSET + (float)gyro_raw / SENSITIVITY_SCALE_FACTOR;
+    gyro_->yaw_deg += gyro_->angular_vel * 0.001;
 }
 

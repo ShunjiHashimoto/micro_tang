@@ -6,14 +6,29 @@
  */
 
 #include "motor.hpp"
-#include "math.h"
 
-Motor hoge_motor(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorL_TIM1_CH1_Pin, TIM_CHANNEL_2, -1);
+extern Encoder encoder_r;
+extern Encoder encoder_l;
+extern Gyro gyro;
+
+// 参照渡しの場合は、htim1は直接渡す
+Motor motor_l(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorL_TIM1_CH1_Pin, TIM_CHANNEL_2, -1);
+Motor motor_r(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorR_TIM1_CH3_Pin, TIM_CHANNEL_4, 1);
 
 extern "C" {
-void hoge(void){
-	hoge_motor.hoge_val += 1;
-}
+    void pwmControl(){
+        float torque = (MotorParam::m*LinearVelocityPID::target_a*MotorParam::r)/MotorParam::GEAR_RATIO;
+        LinearVelocityPID::current_linear_vel = (MotorParam::r*(encoder_r.rotation_speed) + MotorParam::r*(encoder_l.rotation_speed))/2.0;
+        AngularVelocityPID::current_angular_vel  = gyro.angular_vel*GYRO_GAIN*M_PI/180;
+        float calculated_linear_vel  = Motor::linearVelocityPIDControl(LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel, LinearVelocityPID::vel_pid_error_sum);
+        float calculated_angular_vel = Motor::angularVelocityPIDControl(AngularVelocityPID::target_angular_vel, AngularVelocityPID::current_angular_vel, AngularVelocityPID::w_pid_error_sum);
+        float rotation_speed_r       = motor_r.calcMotorSpeed(calculated_linear_vel, calculated_angular_vel); // [rpm]
+        float rotation_speed_l       = motor_l.calcMotorSpeed(calculated_linear_vel, calculated_angular_vel); // [rpm]
+        float duty_r = 100*(MotorParam::R*torque/MotorParam::Kt + MotorParam::Ke*rotation_speed_r)/Battery::adc_bat;
+        float duty_l = 100*(MotorParam::R*torque/MotorParam::Kt + MotorParam::Ke*rotation_speed_l)/Battery::adc_bat;
+        motor_r.run(GPIO_PIN_RESET, duty_r);
+        motor_l.run(GPIO_PIN_SET, duty_l); 
+    }
 }
 
 Motor::Motor(TIM_HandleTypeDef &htim_x, uint16_t mode_channel, GPIO_PinState mode, uint16_t direction_channel, uint16_t duty_channel, int16_t left_or_right)

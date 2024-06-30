@@ -36,6 +36,10 @@ extern "C" {
 #include <stdbool.h>
 #include "tim.h"
 #include "math.h"
+
+#include "encoder.h"
+#include "gyro.h"
+#include "params.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
