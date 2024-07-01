@@ -10,6 +10,7 @@
 extern Encoder encoder_r;
 extern Encoder encoder_l;
 extern Gyro gyro;
+extern ModeManager mode_manager;
 
 // 参照渡しの場合は、htim1は直接渡す
 Motor motor_l(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorL_TIM1_CH1_Pin, TIM_CHANNEL_2, -1);
@@ -17,6 +18,12 @@ Motor motor_r(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorR_TIM1_CH3_Pin, TIM_CHAN
 
 extern "C" {
     void pwmControl(){
+        Mode::ModeType current_mode = mode_manager.getCurrentMode();
+        if(current_mode == Mode::ModeType::WAIT) {
+            motor_r.run(GPIO_PIN_RESET, 0);
+            motor_l.run(GPIO_PIN_RESET, 0);
+            return;
+        }
         float torque = (MotorParam::m*LinearVelocityPID::target_a*MotorParam::r)/MotorParam::GEAR_RATIO;
         LinearVelocityPID::current_linear_vel = (MotorParam::r*(encoder_r.rotation_speed) + MotorParam::r*(encoder_l.rotation_speed))/2.0;
         AngularVelocityPID::current_angular_vel  = gyro.angular_vel*GYRO_GAIN*M_PI/180;

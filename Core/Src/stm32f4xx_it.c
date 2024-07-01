@@ -26,6 +26,7 @@
 #include "gyro.h"
 
 extern void pwmControl(void);
+extern void updateModeManager(void);
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -217,7 +218,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
   /* USER CODE END TIM1_BRK_TIM9_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   HAL_TIM_IRQHandler(&htim9);
-  
+  updateModeManager();
   /* USER CODE BEGIN TIM1_BRK_TIM9_IRQn 1 */
 
   /* USER CODE END TIM1_BRK_TIM9_IRQn 1 */
@@ -233,12 +234,12 @@ void TIM4_IRQHandler(void)
   /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM4_IRQn 1 */
-  Encoder_Update(&encoder_l, __HAL_TIM_GET_COUNTER(&htim2));
-  Encoder_Update(&encoder_r, __HAL_TIM_GET_COUNTER(&htim3));
+  updateEncoder(&encoder_l, __HAL_TIM_GET_COUNTER(&htim2));
+  updateEncoder(&encoder_r, __HAL_TIM_GET_COUNTER(&htim3));
   // TODO: Encoder_Update関数の中にタイマリセットも書く
   __HAL_TIM_SET_COUNTER(&htim2, (__HAL_TIM_GET_AUTORELOAD(&htim2)+1)/2); // タイマをリセット
   __HAL_TIM_SET_COUNTER(&htim3, (__HAL_TIM_GET_AUTORELOAD(&htim3)+1)/2); // タイマをリセット
-  Gyro_Update(&gyro);
+  updateGyro(&gyro);
 
   /* USER CODE END TIM4_IRQn 1 */
 }

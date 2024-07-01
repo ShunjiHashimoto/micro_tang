@@ -9,10 +9,12 @@
 #define INC_MOTOR_HPP
 #include "main.h"
 #include "params.hpp"
+#include "log.hpp"
 #include "tim.h"
 #include "math.h"
 #include "encoder.h"
 #include "gyro.h"
+#include "mode.hpp"
 
 //void hoge(void);
 
