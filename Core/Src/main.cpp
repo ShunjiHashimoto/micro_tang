@@ -71,12 +71,12 @@ extern "C" int __io_putchar(int ch) {
     HAL_UART_Transmit(&huart3, (uint8_t *)&ch, 1, 100);
     return ch;
 }
-void encoderInit(void) {
+void initInterrupt(void) {
   HAL_TIM_Base_Start_IT(&htim4); // 割り込み処理開始
   HAL_TIM_Base_Start_IT(&htim5); // 割り込み処理開始
   HAL_TIM_Base_Start_IT(&htim9); // 割り込み処理開始
-  Encoder_Init(&encoder_l, &htim2, MotorParam::PULSE_PER_TIRE_ONEROTATION, true);
-  Encoder_Init(&encoder_r, &htim3, MotorParam::PULSE_PER_TIRE_ONEROTATION, false);
+  initEncoder(&encoder_l, &htim2, MotorParam::PULSE_PER_TIRE_ONEROTATION, true);
+  initEncoder(&encoder_r, &htim3, MotorParam::PULSE_PER_TIRE_ONEROTATION, false);
 }
 void updateBattery(){
   // バッテリー電圧の取得
@@ -131,7 +131,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   setbuf(stdout, NULL); // std::outのバッファリングを無効にし、ログを即出力する
   gyroInit(&gyro);
-  encoderInit();
+  initInterrupt();
   /* USER CODE END 2 */
 
   /* Infinite loop */

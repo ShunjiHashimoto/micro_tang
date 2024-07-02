@@ -11,7 +11,9 @@ extern "C" {
 
     void updateModeManager(){
         mode_manager.updateCurrentMode();
-        
+    }
+
+    void saveLog() {
         // std::vector<float> log_linear_vel = {LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel};
         std::vector<float> log_linear_vel = {AngularVelocityPID::target_angular_vel, AngularVelocityPID::current_angular_vel};
         // 四捨五入を適用してlog_linear_velに再度格納

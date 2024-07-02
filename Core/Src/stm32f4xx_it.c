@@ -25,8 +25,9 @@
 #include "encoder.h"
 #include "gyro.h"
 
-extern void pwmControl(void);
-extern void updateModeManager(void);
+extern void pwmControl();
+extern void updateModeManager();
+extern void saveLog();
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -219,6 +220,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
   HAL_TIM_IRQHandler(&htim1);
   HAL_TIM_IRQHandler(&htim9);
   updateModeManager();
+  saveLog();
   /* USER CODE BEGIN TIM1_BRK_TIM9_IRQn 1 */
 
   /* USER CODE END TIM1_BRK_TIM9_IRQn 1 */

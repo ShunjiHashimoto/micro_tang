@@ -15,8 +15,8 @@ typedef struct {
 
 uint8_t Gyro_ReadByte(uint8_t reg);
 void Gyro_WriteByte(uint8_t reg, uint8_t data);
-void Gyro_Init(Gyro* gyro_);
-void Gyro_Update(Gyro* gyro_);
+void gyroInit(Gyro* gyro_);
+void updateGyro(Gyro* gyro_);
 extern Gyro gyro;
 
 #endif /* GYRO_H */

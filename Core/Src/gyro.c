@@ -34,7 +34,7 @@ void Gyro_WriteByte(uint8_t reg, uint8_t data)
   HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
 }
 
-void Gyro_Init(Gyro* gyro_) {
+void gyroInit(Gyro* gyro_) {
     gyro_->angular_vel = 0.0;
     gyro_->yaw_deg = 0.0;
     uint8_t who_am_i;
@@ -67,7 +67,7 @@ void Gyro_Init(Gyro* gyro_) {
     HAL_Delay(100);
 }
 
-void Gyro_Update(Gyro* gyro_) {
+void updateGyro(Gyro* gyro_) {
     // HAL_Delay(100);
     uint8_t zout_h, zout_l;
     zout_h = Gyro_ReadByte(0x37);

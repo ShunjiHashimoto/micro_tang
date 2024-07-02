@@ -44,7 +44,7 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-void encoder_init();
+void initInterrupt();
 
 /* USER CODE END ET */
 

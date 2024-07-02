@@ -1,6 +1,6 @@
 #include "encoder.h"
 
-void Encoder_Init(Encoder* encoder, TIM_HandleTypeDef* htim_x, int32_t one_rotation_pulse, bool cw) {
+void initEncoder(Encoder* encoder, TIM_HandleTypeDef* htim_x, int32_t one_rotation_pulse, bool cw) {
     encoder->delta_pulse = 0;
     encoder->total_pulse = 0;
     encoder->htim_x = htim_x;
@@ -13,21 +13,21 @@ void Encoder_Init(Encoder* encoder, TIM_HandleTypeDef* htim_x, int32_t one_rotat
     HAL_TIM_Encoder_Start_IT(encoder->htim_x, TIM_CHANNEL_ALL); // 左車輪のエンコーダのカウントスタート
 }
 
-void Encoder_Update(Encoder* encoder, uint32_t cur_pulse) {
+void updateEncoder(Encoder* encoder, uint32_t cur_pulse) {
     encoder->delta_pulse = -encoder->initial_pulse_count + cur_pulse;
     encoder->total_pulse += (encoder->forward_wise ? -encoder->delta_pulse : encoder->delta_pulse);
     encoder->rotation_speed = (encoder->forward_wise ? 
     (-encoder->delta_pulse * encoder->rad_per_rotation)/0.001: (encoder->delta_pulse * encoder->rad_per_rotation)/0.001);
 }
 
-int32_t Encoder_GetDeltaPulse(const Encoder* encoder) {
+int32_t getDeltaPulse(const Encoder* encoder) {
     return encoder->delta_pulse;
 }
 
-int32_t Encoder_GetTotalPulse(const Encoder* encoder) {
+int32_t getTotalPulse(const Encoder* encoder) {
     return encoder->total_pulse;
 }
 
-int32_t Encoder_GetRotationCount(const Encoder* encoder) {
+int32_t getRotationCount(const Encoder* encoder) {
     return encoder->total_pulse / encoder->one_rotation_pulse;
 }
