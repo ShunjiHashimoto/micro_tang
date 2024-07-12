@@ -14,4 +14,3 @@ void LedBlink::toggle() {
     HAL_GPIO_WritePin(GPIOB, Debug_LED_Pin, GPIO_PIN_RESET); //LEDを点灯
     HAL_Delay(100);
 }
-

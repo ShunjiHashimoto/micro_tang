@@ -27,14 +27,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "led.hpp"
-#include "motor.hpp"
 // #include "params.hpp"
-#include "log.hpp"
-#include "mode.hpp"
-extern Motor motor_l;
-extern Motor motor_r;
-extern ModeManager mode_manager;
-extern Log vel_log;
+#include "robot_controller.hpp"
 
 /* USER CODE END Includes */
 
@@ -94,9 +88,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   LedBlink ledBlink;
-  // 参照渡しの場合は、htim1は直接渡す
-  // Motor motor_l(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorL_TIM1_CH1_Pin, TIM_CHANNEL_2, -1);
-  // Motor motor_r(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorR_TIM1_CH3_Pin, TIM_CHANNEL_4, 1);
+  RobotController robot_controller;
 
   /* USER CODE END 1 */
 
@@ -132,32 +124,14 @@ int main(void)
   setbuf(stdout, NULL); // std::outのバッファリングを無効にし、ログを即出力する
   gyroInit(&gyro);
   initInterrupt();
+  updateBattery();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1){
     ledBlink.toggle();
-    Mode::ModeType current_mode = mode_manager.getCurrentMode();
-
-    // if(current_mode == Mode::ModeType::WAIT) {
-
-    // }
-
-    if(current_mode == Mode::ModeType::RUN) {
-      // printf("cur_vel %lf tar_vel %lf\n\r", LinearVelocityPID::current_linear_vel, LinearVelocityPID::target_linear_vel);
-      printf("tar_vel %lf cur_vel %lf\n\r", AngularVelocityPID::target_angular_vel, AngularVelocityPID::current_angular_vel);
-      LinearVelocityPID::target_linear_vel = 0.01;
-      AngularVelocityPID::target_angular_vel = 1.0;
-    }
-
-    else if(current_mode == Mode::ModeType::LOG) {
-      LinearVelocityPID::target_linear_vel = 0.0;
-      vel_log.printLog();
-      HAL_Delay(2000);
-      break;
-    }
-
+    robot_controller.mainControl();
     HAL_Delay(MotorParam::RATE);
     /* USER CODE END WHILE */
 

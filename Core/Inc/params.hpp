@@ -18,10 +18,11 @@ namespace MotorParam {
 }
 
 namespace LinearVelocityPID {
-    extern float target_a;
+    extern float target_a; // 加速度
     extern float vel_pid_error_sum;
     extern float target_linear_vel;
     extern float current_linear_vel;
+    extern float calculated_linear_vel;
     const float Kp = 2.0;
     const float Ki = 0.8;
     const float Kd = 0.0;
@@ -30,9 +31,11 @@ namespace LinearVelocityPID {
 }
 
 namespace AngularVelocityPID {
-    extern float target_angular_vel;
+    extern float target_alpha;  // 角加速度
     extern float w_pid_error_sum;
+    extern float target_angular_vel;
     extern float current_angular_vel;
+    extern float calculated_angular_vel;
     const float Kp = 2.0;
     const float Ki = 0.8;
     const float Kd = 0.0;

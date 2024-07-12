@@ -2,6 +2,7 @@
 #define LOG_HPP
 #include "main.h"
 #include <vector>
+#include "params.hpp"
 
 class Log {
 public:

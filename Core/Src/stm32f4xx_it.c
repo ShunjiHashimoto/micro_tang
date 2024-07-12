@@ -27,7 +27,7 @@
 
 extern void pwmControl();
 extern void updateModeManager();
-extern void saveLog();
+extern void updateLog();
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -220,7 +220,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
   HAL_TIM_IRQHandler(&htim1);
   HAL_TIM_IRQHandler(&htim9);
   updateModeManager();
-  saveLog();
+  updateLog();
   /* USER CODE BEGIN TIM1_BRK_TIM9_IRQn 1 */
 
   /* USER CODE END TIM1_BRK_TIM9_IRQn 1 */
