@@ -18,10 +18,12 @@ typedef struct {
 } Encoder;
 
 // 初期化関数
-void initEncoder(Encoder* encoder, TIM_HandleTypeDef* htim_x, int32_t one_rotation_pulse, bool cw);
+void initEncoder(Encoder* encoder, TIM_HandleTypeDef* htim_x, float one_rotation_pulse, bool cw);
 
 // 更新関数
 void updateEncoder(Encoder* encoder, uint32_t pulse_count);
+
+void resetEncoder(Encoder* encoder);
 
 // delta_pulseを取得する関数
 int32_t getDeltaPulse(const Encoder* encoder);
