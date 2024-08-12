@@ -6,6 +6,7 @@ namespace LinearVelocityPID {
     float target_linear_vel = 0.0;
     float current_linear_vel = 0.0;
     float calculated_linear_vel = 0.0;
+    float current_distance = 0.0;
 }
 
 namespace AngularVelocityPID {
@@ -13,6 +14,7 @@ namespace AngularVelocityPID {
     float w_pid_error_sum = 0.0;
     float current_angular_vel = 0.0;
     float calculated_angular_vel = 0.0;
+    float current_angle = 0.0;
 }
 
 namespace Battery {
