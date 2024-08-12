@@ -69,6 +69,7 @@ void initInterrupt(void) {
   HAL_TIM_Base_Start_IT(&htim4); // 割り込み処理開始
   HAL_TIM_Base_Start_IT(&htim5); // 割り込み処理開始
   HAL_TIM_Base_Start_IT(&htim9); // 割り込み処理開始
+  HAL_TIM_Base_Start_IT(&htim12); // 割り込み処理開始
   initEncoder(&encoder_l, &htim2, MotorParam::PULSE_PER_TIRE_ONEROTATION, true);
   initEncoder(&encoder_r, &htim3, MotorParam::PULSE_PER_TIRE_ONEROTATION, false);
 }
@@ -120,6 +121,7 @@ int main(void)
   MX_ADC2_Init();
   MX_TIM5_Init();
   MX_TIM9_Init();
+  MX_TIM12_Init();
   /* USER CODE BEGIN 2 */
   setbuf(stdout, NULL); // std::outのバッファリングを無効にし、ログを即出力する
   gyroInit(&gyro);
@@ -133,6 +135,7 @@ int main(void)
     ledBlink.toggle();
     robot_controller.mainControl();
     HAL_Delay(MotorParam::RATE);
+    // printf("encoder_l: %lf, encoder_r: %lf\n\r", encoder_l.rotation_speed, encoder_r.rotation_speed);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

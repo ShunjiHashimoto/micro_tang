@@ -26,6 +26,7 @@
 #include "gyro.h"
 
 extern void pwmControl();
+extern void updateTargetVelocity();
 extern void updateModeManager();
 extern void updateLog();
 /* USER CODE END Includes */
@@ -67,6 +68,7 @@ extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim9;
+extern TIM_HandleTypeDef htim12;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -219,9 +221,9 @@ void TIM1_BRK_TIM9_IRQHandler(void)
   /* USER CODE END TIM1_BRK_TIM9_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   HAL_TIM_IRQHandler(&htim9);
+  /* USER CODE BEGIN TIM1_BRK_TIM9_IRQn 1 */
   updateModeManager();
   updateLog();
-  /* USER CODE BEGIN TIM1_BRK_TIM9_IRQn 1 */
 
   /* USER CODE END TIM1_BRK_TIM9_IRQn 1 */
 }
@@ -244,6 +246,21 @@ void TIM4_IRQHandler(void)
   updateGyro(&gyro);
 
   /* USER CODE END TIM4_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM8 break interrupt and TIM12 global interrupt.
+  */
+void TIM8_BRK_TIM12_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM8_BRK_TIM12_IRQn 0 */
+  updateTargetVelocity();
+
+  /* USER CODE END TIM8_BRK_TIM12_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim12);
+  /* USER CODE BEGIN TIM8_BRK_TIM12_IRQn 1 */
+
+  /* USER CODE END TIM8_BRK_TIM12_IRQn 1 */
 }
 
 /**
