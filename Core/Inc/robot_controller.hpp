@@ -17,6 +17,7 @@ class RobotController {
         RobotController();
         void mainControl();
         void motorControl(float target_linear_vel, float target_angular_vel);
+        void linearRun(float distance);
         float getCalculatedLinearVel();
         float getCalculatedAngularVel();
         float getCurrentLinearVel();
