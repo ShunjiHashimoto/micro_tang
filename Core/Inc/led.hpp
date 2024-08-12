@@ -11,6 +11,7 @@
 class LedBlink {
 public:
     void toggle();
+    void stop();
 };
 
 
