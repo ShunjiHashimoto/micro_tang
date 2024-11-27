@@ -51,9 +51,9 @@ namespace Battery {
 }
 
 namespace RobotControllerParam {
-    const float MAX_SPEED = 0.5; // [m/s]
-    const float ACCEL = 0.5;
-    const float DECEL = -0.5;
+    const float MAX_SPEED = 0.2; // [mm/s]
+    const float ACCEL = 1.0; // [mm/s^2]
+    const float DECEL = 1.0; // [mm/s^2]
     const float TARGET_DISTANCE = 0.3;
 }
 

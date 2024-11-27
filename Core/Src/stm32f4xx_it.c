@@ -27,6 +27,7 @@
 
 extern void pwmControl();
 extern void updateTargetVelocity();
+// extern void calcTrapezoidalProfile();
 extern void updateModeManager();
 extern void updateLog();
 /* USER CODE END Includes */
@@ -214,6 +215,8 @@ void SysTick_Handler(void)
 /**
   * @brief This function handles TIM1 break interrupt and TIM9 global interrupt.
   */
+
+// mainloopのtimer
 void TIM1_BRK_TIM9_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_BRK_TIM9_IRQn 0 */
@@ -254,7 +257,7 @@ void TIM4_IRQHandler(void)
 void TIM8_BRK_TIM12_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM8_BRK_TIM12_IRQn 0 */
-  updateTargetVelocity();
+  // calcTrapezoidalProfile(0.5);
 
   /* USER CODE END TIM8_BRK_TIM12_IRQn 0 */
   HAL_TIM_IRQHandler(&htim12);

@@ -15,6 +15,7 @@
 #include "encoder.h"
 #include "gyro.h"
 #include "mode.hpp"
+#include "led.hpp"
 
 namespace CommonMotorControl {
     float calcCurrentLinearVel(float rotation_speed_r, float rotation_speed_l);

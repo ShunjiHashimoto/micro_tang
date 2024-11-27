@@ -4,12 +4,12 @@ Log vel_log;
 
 extern "C" {
     float roundToTwoDecimalPlaces(float value) {
-        return std::round(value * 100.0f) / 100.0f;
+        return std::round(value * 1000.0f) / 1000.0f;
     }
 
     void updateLog() {
         // std::vector<float> log = {LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel};
-        std::vector<float> log = {AngularVelocityPID::target_angular_vel, AngularVelocityPID::current_angular_vel};
+        std::vector<float> log = {LinearVelocityPID::current_linear_vel, LinearVelocityPID::current_distance};
         // 四捨五入を適用してlogに再度格納
         for (auto& vel : log) {
             vel = roundToTwoDecimalPlaces(vel);

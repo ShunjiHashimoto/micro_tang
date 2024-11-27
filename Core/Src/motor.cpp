@@ -15,12 +15,13 @@ extern ModeManager mode_manager;
 // 参照渡しの場合は、htim1は直接渡す
 Motor motor_l(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorL_TIM1_CH1_Pin, TIM_CHANNEL_2, -1);
 Motor motor_r(htim1, Motor_Mode_Pin, GPIO_PIN_SET, MotorR_TIM1_CH3_Pin, TIM_CHANNEL_4, 1);
+LedBlink ledBlink;
 
 extern "C" {
-    void pwmControl(){
+    void pwmControl() {
         Mode::ModeType current_mode = mode_manager.getCurrentMode();
         if(current_mode == Mode::ModeType::WAIT || current_mode == Mode::ModeType::LOG) {
-            CommonMotorControl::resetTargetVelocity();
+            // CommonMotorControl::resetTargetVelocity();
             motor_r.Stop();
             motor_l.Stop();
             return;
@@ -28,21 +29,54 @@ extern "C" {
         float torque = CommonMotorControl::calcTorque(LinearVelocityPID::target_a);
         LinearVelocityPID::current_linear_vel = CommonMotorControl::calcCurrentLinearVel(encoder_r.rotation_speed, encoder_l.rotation_speed);
         AngularVelocityPID::current_angular_vel  = CommonMotorControl::calcCurrentAngularVel(gyro.angular_vel);
+        LinearVelocityPID::current_distance += LinearVelocityPID::current_linear_vel; // 0.001*1000, [mm]
+        AngularVelocityPID::current_angle  += AngularVelocityPID::current_angle * 0.001;
+
         LinearVelocityPID::calculated_linear_vel  = Motor::linearVelocityPIDControl(LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel, LinearVelocityPID::vel_pid_error_sum);
         AngularVelocityPID::calculated_angular_vel = Motor::angularVelocityPIDControl(AngularVelocityPID::target_angular_vel, AngularVelocityPID::current_angular_vel, AngularVelocityPID::w_pid_error_sum);
         motor_r.rotation_speed = motor_r.calcMotorSpeed(LinearVelocityPID::calculated_linear_vel, AngularVelocityPID::calculated_angular_vel); // [rpm]
         motor_l.rotation_speed = motor_l.calcMotorSpeed(LinearVelocityPID::calculated_linear_vel, AngularVelocityPID::calculated_angular_vel); // [rpm]
-        motor_r.duty = motor_r.calcDuty(torque);
-        motor_l.duty = motor_l.calcDuty(torque);
+        int duty_r = motor_r.calcDuty(torque);
+        int duty_l = motor_l.calcDuty(torque);
+        if(duty_r < 0) duty_r = 0;
+        if(duty_l < 0) duty_l = 0;
+        motor_r.duty = duty_r;
+        motor_l.duty = duty_l;
         motor_r.Run(GPIO_PIN_RESET);
         motor_l.Run(GPIO_PIN_SET); 
     }
+    // void updateTargetVelocity(float target_distance) {
+        // 制御周期：1[mm/sec]
+    // }
+    // void calcTrapezoidalProfile(float target_distance) {
+    //     Mode::ModeType current_mode = mode_manager.getCurrentMode();
+    //     if(current_mode == Mode::ModeType::WAIT || current_mode == Mode::ModeType::LOG) {
+    //         return;
+    //     }
+    //     if(target_distance = 0.0) return;
+    //     float v_max = RobotControllerParam::MAX_SPEED;
+    //     float a = RobotControllerParam::ACCEL;
+    //     // 加速・減速距離の計算
+    //     float t_acc = v_max/a;
+    //     float d_acc = 0.5*a*t_acc*t_acc;
+    //     // 定速距離の計算
+    //     float d_const = target_distance - 2*d_acc;
+    //     // 定速距離が負の場合は、定速距離をなくし、加速・減速距離のみとする
+    //     if(d_const < 0) {
+    //         d_const = 0;
+    //         d_acc = target_distance/2;
+    //         t_acc = sqrt(2*d_acc/a);
+    //     }
+    //     // 定速距離を最大速度で走行する場合の走行時間
+    //     float t_const = d_const/v_max;
+    // }
 }
 
 float CommonMotorControl::calcTorque(float target_a) {
     return (MotorParam::m*target_a*MotorParam::r)/MotorParam::GEAR_RATIO;
 }
 
+// 車体の線形速度vを計算, rotation_speedはモータの角速度w
 float CommonMotorControl::calcCurrentLinearVel(float rotation_speed_r, float rotation_speed_l) {
     return ((MotorParam::r*rotation_speed_r) + (MotorParam::r*rotation_speed_l))/2.0;
 }
@@ -54,7 +88,11 @@ float CommonMotorControl::calcCurrentAngularVel(float angular_vel) {
 void CommonMotorControl::resetTargetVelocity() {
     LinearVelocityPID::target_linear_vel = 0.0;
     AngularVelocityPID::target_angular_vel = 0.0;
+    LinearVelocityPID::current_distance = 0.0;
+    AngularVelocityPID::current_angle = 0.0;
     // TODO: encoder値やpwm制御の値をリセット
+    resetEncoder(&encoder_l);
+    resetEncoder(&encoder_r);
     return;
 }
 
