@@ -37,9 +37,9 @@ public:
     float rotation_speed;
     int duty;
 
-    float calcMotorSpeed(float calculated_linear_vel, float calculated_angular_vel);
+    float calcMotorSpeed(float calculated_linear_vel_mm, float calculated_angular_vel);
     int calcDuty(float torque);
-    static float linearVelocityPIDControl(float target_linear_vel, float current_linear_vel, float &pid_error_sum);
+    static float linearVelocityPIDControl(float target_linear_vel_mm, float current_linear_vel_mm, float &pid_error_sum);
     static float angularVelocityPIDControl(float target_angular_vel, float current_angular_vel, float &pid_error_sum);
 
     /**
@@ -56,7 +56,7 @@ private:
     uint16_t direction_channel;
     uint16_t duty_channel;
     int16_t left_or_right;
-    // float current_linear_vel;
+    // float current_linear_vel_mm;
     // float current_angular_vel;
 };
 

@@ -3,9 +3,9 @@
 namespace LinearVelocityPID {
     float target_a = 18;
     float vel_pid_error_sum = 0.0;
-    float target_linear_vel = 0.0;
-    float current_linear_vel = 0.0;
-    float calculated_linear_vel = 0.0;
+    float target_linear_vel_mm = 0.0;
+    float current_linear_vel_mm = 0.0;
+    float calculated_linear_vel_mm = 0.0;
     float current_distance = 0.0;
 }
 

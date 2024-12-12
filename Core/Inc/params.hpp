@@ -20,9 +20,9 @@ namespace MotorParam {
 namespace LinearVelocityPID {
     extern float target_a; // 加速度
     extern float vel_pid_error_sum;
-    extern float target_linear_vel;
-    extern float current_linear_vel;
-    extern float calculated_linear_vel;
+    extern float target_linear_vel_mm;
+    extern float current_linear_vel_mm;
+    extern float calculated_linear_vel_mm;
     extern float current_distance;
     const float Kp = 0.1;
     const float Ki = 0.0;

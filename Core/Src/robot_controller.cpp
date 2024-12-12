@@ -8,8 +8,8 @@ extern Log vel_log;
 RobotController::RobotController(){
 };
 
-void RobotController::motorControl(float target_linear_vel, float target_angular_vel) {
-    LinearVelocityPID::target_linear_vel = target_linear_vel;
+void RobotController::motorControl(float target_linear_vel_mm, float target_angular_vel) {
+    LinearVelocityPID::target_linear_vel_mm = target_linear_vel_mm;
     AngularVelocityPID::target_angular_vel = target_angular_vel;
     return;
 }
@@ -19,8 +19,8 @@ void RobotController::straight(float target_distance) { // [mm]
     if(diff < 10) return;
     // float v_0 = 0.0; // [mm/sec]
     LinearVelocityPID::current_distance = 0.0;
-    LinearVelocityPID::current_linear_vel = 0.0;
-    float v_0 = LinearVelocityPID::current_linear_vel; // [mm/sec]
+    LinearVelocityPID::current_linear_vel_mm = 0.0;
+    float v_0 = LinearVelocityPID::current_linear_vel_mm; // [mm/sec]
     float v_max = RobotControllerParam::MAX_SPEED; // [mm/sec]
     float accel = RobotControllerParam::ACCEL; // [mm/sec^2]
     float decel = RobotControllerParam::DECEL; // [mm/sec^2]
@@ -37,7 +37,7 @@ void RobotController::straight(float target_distance) { // [mm]
     // 1カウントあたり20μs（TIM9）, 200msごとにオーバーフロー 
     unsigned long prev_count = 0; 
     float total_time = 0.0;
-    LinearVelocityPID::target_linear_vel = 0.0;
+    LinearVelocityPID::target_linear_vel_mm = 0.0;
     AngularVelocityPID::target_angular_vel = 0.0;
     motor_r.Stop();
     motor_l.Stop();
@@ -58,25 +58,25 @@ void RobotController::straight(float target_distance) { // [mm]
       if(diff < 10) break;
       // 加速区間, delta_time = 0.022480[sec], v=a*t=100[mm/sec^2]*0.022480[sec]=0.22480[mm/sec]
       if(LinearVelocityPID::current_distance < AL){
-        LinearVelocityPID::target_linear_vel += accel*delta_time;
-        printf("AL, %lf, current_distance, %lf ,accel, diff, %lf, target_vel, %lf, cur_vel, %lf, calculated_vel, %lf, delta_time, %lf\n\r", AL , LinearVelocityPID::current_distance, diff, LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel, LinearVelocityPID::calculated_linear_vel, delta_time);
+        LinearVelocityPID::target_linear_vel_mm += accel*delta_time;
+        printf("AL, %lf, current_distance, %lf ,accel, diff, %lf, target_vel, %lf, cur_vel, %lf, calculated_vel, %lf, delta_time, %lf\n\r", AL , LinearVelocityPID::current_distance, diff, LinearVelocityPID::target_linear_vel_mm, LinearVelocityPID::current_linear_vel_mm, LinearVelocityPID::calculated_linear_vel_mm, delta_time);
       }
       // 定速区間
       else if (LinearVelocityPID::current_distance >= AL && LinearVelocityPID::current_distance <= (AL+CL)) {
-        LinearVelocityPID::target_linear_vel = v_max;
-        printf("CL, %lf, current_distance: %lf ,const, diff: %lf, target_vel: %lf,  cur_vel, %lf, delta_time: %lf\n\r", CL, LinearVelocityPID::current_distance, diff, LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel, delta_time);
+        LinearVelocityPID::target_linear_vel_mm = v_max;
+        printf("CL, %lf, current_distance: %lf ,const, diff: %lf, target_vel: %lf,  cur_vel, %lf, delta_time: %lf\n\r", CL, LinearVelocityPID::current_distance, diff, LinearVelocityPID::target_linear_vel_mm, LinearVelocityPID::current_linear_vel_mm, delta_time);
       }
       // 減速区間
       else if (LinearVelocityPID::current_distance > (AL+CL) && LinearVelocityPID::current_distance <= target_distance) {
-        LinearVelocityPID::target_linear_vel -= decel*delta_time;
-        printf("current_distance: %lf ,decel, diff: %lf, target_vel: %lf,  cur_vel, %lf, delta_time: %lf\n\r", LinearVelocityPID::current_distance, diff, LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel, delta_time);
+        LinearVelocityPID::target_linear_vel_mm -= decel*delta_time;
+        printf("current_distance: %lf ,decel, diff: %lf, target_vel: %lf,  cur_vel, %lf, delta_time: %lf\n\r", LinearVelocityPID::current_distance, diff, LinearVelocityPID::target_linear_vel_mm, LinearVelocityPID::current_linear_vel_mm, delta_time);
       }
-      printf("timestamp, %lf, target_vel, %lf, cur_vel, %lf, distance, %lf\n\r", total_time, LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel, LinearVelocityPID::current_distance);
-      if(LinearVelocityPID::target_linear_vel > v_max) LinearVelocityPID::target_linear_vel = v_max;
-      if(LinearVelocityPID::target_linear_vel < 0) LinearVelocityPID::target_linear_vel = 0.0;
+      printf("timestamp, %lf, target_vel, %lf, cur_vel, %lf, distance, %lf\n\r", total_time, LinearVelocityPID::target_linear_vel_mm, LinearVelocityPID::current_linear_vel_mm, LinearVelocityPID::current_distance);
+      if(LinearVelocityPID::target_linear_vel_mm > v_max) LinearVelocityPID::target_linear_vel_mm = v_max;
+      if(LinearVelocityPID::target_linear_vel_mm < 0) LinearVelocityPID::target_linear_vel_mm = 0.0;
     }
     printf("stop\n\r");
-    LinearVelocityPID::target_linear_vel = 0.0;
+    LinearVelocityPID::target_linear_vel_mm = 0.0;
     AngularVelocityPID::target_angular_vel = 0.0;
     motor_r.Stop();
     motor_l.Stop();
@@ -88,7 +88,7 @@ void RobotController::linearRun(float distance) {
 }
 
 float RobotController::getCalculatedLinearVel() {
-    return LinearVelocityPID::calculated_linear_vel;
+    return LinearVelocityPID::calculated_linear_vel_mm;
 }
 
 float RobotController::getCalculatedAngularVel() {
@@ -96,7 +96,7 @@ float RobotController::getCalculatedAngularVel() {
 }
 
 float RobotController::getCurrentLinearVel() {
-    return LinearVelocityPID::current_linear_vel;
+    return LinearVelocityPID::current_linear_vel_mm;
 }
 
 float RobotController::getCurrentAngularVel() {
@@ -107,16 +107,16 @@ void RobotController::mainControl(){
     Mode::ModeType current_mode = mode_manager.getCurrentMode();
 
     if(current_mode == Mode::ModeType::RUN) {
-      // printf("cur_LinearVelocityPIDvel %lf tar_vel %lf\n\r", LinearVelocityPID::current_linear_vel, LinearVelocityPID::target_linear_vel);
+      // printf("cur_LinearVelocityPIDvel %lf tar_vel %lf\n\r", LinearVelocityPID::current_linear_vel_mm, LinearVelocityPID::target_linear_vel_mm);
       // printf("tar_vel %lf cur_vel %lf\n\r", AngularVelocityPID::target_angular_vel, this->getCurrentAngularVel());
       // printf("duty_r %d, duty_l %d\n\r", motor_r.duty, motor_l.duty);
       // printf("current_distance: %lf angle: %lf\n\r", LinearVelocityPID::current_distance, AngularVelocityPID::current_angle);
       this->straight(2000);
       // モード更新し、終了
       // HAL_Delay(200);
-      // LinearVelocityPID::target_linear_vel = 200;
+      // LinearVelocityPID::target_linear_vel_mm = 200;
       // if(LinearVelocityPID::current_distance > 1000) {
-      //   LinearVelocityPID::target_linear_vel = 0.0;
+      //   LinearVelocityPID::target_linear_vel_mm = 0.0;
       //   AngularVelocityPID::target_angular_vel = 0.0;
       //   motor_r.Stop();
       //   motor_l.Stop();

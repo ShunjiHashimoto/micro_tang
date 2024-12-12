@@ -28,17 +28,17 @@ extern "C" {
         }
         float torque = CommonMotorControl::calcTorque(LinearVelocityPID::target_a);
         // velは[mm/sec]に基づき計算
-        LinearVelocityPID::current_linear_vel = CommonMotorControl::calcCurrentLinearVel(encoder_r.rotation_speed, encoder_l.rotation_speed); // [mm/sec]
+        LinearVelocityPID::current_linear_vel_mm = CommonMotorControl::calcCurrentLinearVel(encoder_r.rotation_speed, encoder_l.rotation_speed); // [mm/sec]
         AngularVelocityPID::current_angular_vel  = CommonMotorControl::calcCurrentAngularVel(gyro.angular_vel);
-        LinearVelocityPID::current_distance += LinearVelocityPID::current_linear_vel*0.001; // 0.001*1000, [mm]
+        LinearVelocityPID::current_distance += LinearVelocityPID::current_linear_vel_mm*0.001; // 0.001*1000, [mm]
         AngularVelocityPID::current_angle  += AngularVelocityPID::current_angle * 0.001;
         
         // velは[mm/sec]に基づき計算
-        LinearVelocityPID::calculated_linear_vel  = Motor::linearVelocityPIDControl(LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel , LinearVelocityPID::vel_pid_error_sum);
+        LinearVelocityPID::calculated_linear_vel_mm  = Motor::linearVelocityPIDControl(LinearVelocityPID::target_linear_vel_mm, LinearVelocityPID::current_linear_vel_mm , LinearVelocityPID::vel_pid_error_sum);
         AngularVelocityPID::calculated_angular_vel = Motor::angularVelocityPIDControl(AngularVelocityPID::target_angular_vel, AngularVelocityPID::current_angular_vel, AngularVelocityPID::w_pid_error_sum);
         // velは[m/sec]に基づき計算
-        motor_r.rotation_speed = motor_r.calcMotorSpeed(LinearVelocityPID::calculated_linear_vel, AngularVelocityPID::calculated_angular_vel); // [rpm]
-        motor_l.rotation_speed = motor_l.calcMotorSpeed(LinearVelocityPID::calculated_linear_vel, AngularVelocityPID::calculated_angular_vel); // [rpm]
+        motor_r.rotation_speed = motor_r.calcMotorSpeed(LinearVelocityPID::calculated_linear_vel_mm, AngularVelocityPID::calculated_angular_vel); // [rpm]
+        motor_l.rotation_speed = motor_l.calcMotorSpeed(LinearVelocityPID::calculated_linear_vel_mm, AngularVelocityPID::calculated_angular_vel); // [rpm]
         int duty_r = motor_r.calcDuty(torque);
         int duty_l = motor_l.calcDuty(torque);
         if(duty_r < 0) duty_r = 0;
@@ -89,7 +89,7 @@ float CommonMotorControl::calcCurrentAngularVel(float angular_vel) {
 }
 
 void CommonMotorControl::resetTargetVelocity() {
-    LinearVelocityPID::target_linear_vel = 0.0;
+    LinearVelocityPID::target_linear_vel_mm = 0.0;
     AngularVelocityPID::target_angular_vel = 0.0;
     LinearVelocityPID::current_distance = 0.0;
     AngularVelocityPID::current_angle = 0.0;
@@ -104,20 +104,20 @@ Motor::Motor(TIM_HandleTypeDef &htim_x, uint16_t mode_channel, GPIO_PinState mod
 }
 
 // linear_vel = [mm/sec]
-float Motor::calcMotorSpeed(float calculated_linear_vel, float calculated_angular_vel){
-    float calculated_linear_vel_m = calculated_linear_vel*0.001;
+float Motor::calcMotorSpeed(float calculated_linear_vel_mm, float calculated_angular_vel){
+    float calculated_linear_vel_m = calculated_linear_vel_mm*0.001;
     float vel = calculated_linear_vel_m + left_or_right*(MotorParam::TREAD_WIDTH/2)*calculated_angular_vel;
     float rotation_speed = (vel/MotorParam::r)*MotorParam::GEAR_RATIO*60/(2*M_PI);
     return rotation_speed;
 }
 
-float Motor::linearVelocityPIDControl(float target_linear_vel, float current_linear_vel, float &pid_error_sum){
-    float pid_error = LinearVelocityPID::Kp*(target_linear_vel - current_linear_vel)+ LinearVelocityPID::Ki*pid_error_sum;
-    pid_error_sum += target_linear_vel - current_linear_vel;
+float Motor::linearVelocityPIDControl(float target_linear_vel_mm, float current_linear_vel_mm, float &pid_error_sum){
+    float pid_error = LinearVelocityPID::Kp*(target_linear_vel_mm - current_linear_vel_mm)+ LinearVelocityPID::Ki*pid_error_sum;
+    pid_error_sum += target_linear_vel_mm - current_linear_vel_mm;
     if(pid_error_sum > LinearVelocityPID::MAX_PID_ERROR_SUM) {
         pid_error_sum = LinearVelocityPID::MAX_PID_ERROR_SUM;
     }
-    return target_linear_vel + pid_error;
+    return target_linear_vel_mm + pid_error;
 }
 
 float Motor::angularVelocityPIDControl(float target_angular_vel, float current_angular_vel, float &pid_error_sum){

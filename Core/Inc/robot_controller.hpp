@@ -16,7 +16,7 @@ class RobotController {
     public:
         RobotController();
         void mainControl();
-        void motorControl(float target_linear_vel, float target_angular_vel);
+        void motorControl(float target_linear_vel_mm, float target_angular_vel);
         void linearRun(float distance);
         void straight(float target_distance);
         float getCalculatedLinearVel();
