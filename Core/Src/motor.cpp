@@ -21,19 +21,22 @@ extern "C" {
     void pwmControl() {
         Mode::ModeType current_mode = mode_manager.getCurrentMode();
         if(current_mode == Mode::ModeType::WAIT || current_mode == Mode::ModeType::LOG) {
-            // CommonMotorControl::resetTargetVelocity();
+            CommonMotorControl::resetTargetVelocity();
             motor_r.Stop();
             motor_l.Stop();
             return;
         }
         float torque = CommonMotorControl::calcTorque(LinearVelocityPID::target_a);
-        LinearVelocityPID::current_linear_vel = CommonMotorControl::calcCurrentLinearVel(encoder_r.rotation_speed, encoder_l.rotation_speed);
+        // velは[mm/sec]に基づき計算
+        LinearVelocityPID::current_linear_vel = CommonMotorControl::calcCurrentLinearVel(encoder_r.rotation_speed, encoder_l.rotation_speed); // [mm/sec]
         AngularVelocityPID::current_angular_vel  = CommonMotorControl::calcCurrentAngularVel(gyro.angular_vel);
-        LinearVelocityPID::current_distance += LinearVelocityPID::current_linear_vel; // 0.001*1000, [mm]
+        LinearVelocityPID::current_distance += LinearVelocityPID::current_linear_vel*0.001; // 0.001*1000, [mm]
         AngularVelocityPID::current_angle  += AngularVelocityPID::current_angle * 0.001;
-
-        LinearVelocityPID::calculated_linear_vel  = Motor::linearVelocityPIDControl(LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel, LinearVelocityPID::vel_pid_error_sum);
+        
+        // velは[mm/sec]に基づき計算
+        LinearVelocityPID::calculated_linear_vel  = Motor::linearVelocityPIDControl(LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel , LinearVelocityPID::vel_pid_error_sum);
         AngularVelocityPID::calculated_angular_vel = Motor::angularVelocityPIDControl(AngularVelocityPID::target_angular_vel, AngularVelocityPID::current_angular_vel, AngularVelocityPID::w_pid_error_sum);
+        // velは[m/sec]に基づき計算
         motor_r.rotation_speed = motor_r.calcMotorSpeed(LinearVelocityPID::calculated_linear_vel, AngularVelocityPID::calculated_angular_vel); // [rpm]
         motor_l.rotation_speed = motor_l.calcMotorSpeed(LinearVelocityPID::calculated_linear_vel, AngularVelocityPID::calculated_angular_vel); // [rpm]
         int duty_r = motor_r.calcDuty(torque);
@@ -76,9 +79,9 @@ float CommonMotorControl::calcTorque(float target_a) {
     return (MotorParam::m*target_a*MotorParam::r)/MotorParam::GEAR_RATIO;
 }
 
-// 車体の線形速度vを計算, rotation_speedはモータの角速度w
+// 車体の線形速度v[mm/sec]を計算, rotation_speedはモータの角速度w, *1000で[m]→[mm]
 float CommonMotorControl::calcCurrentLinearVel(float rotation_speed_r, float rotation_speed_l) {
-    return ((MotorParam::r*rotation_speed_r) + (MotorParam::r*rotation_speed_l))/2.0;
+    return (((MotorParam::r*rotation_speed_r) + (MotorParam::r*rotation_speed_l))/2.0)*1000;
 }
 
 float CommonMotorControl::calcCurrentAngularVel(float angular_vel) {
@@ -100,8 +103,10 @@ Motor::Motor(TIM_HandleTypeDef &htim_x, uint16_t mode_channel, GPIO_PinState mod
     : htim_x(htim_x), mode_channel(mode_channel), mode(mode), direction_channel(direction_channel), duty_channel(duty_channel), left_or_right(left_or_right) {
 }
 
+// linear_vel = [mm/sec]
 float Motor::calcMotorSpeed(float calculated_linear_vel, float calculated_angular_vel){
-    float vel = calculated_linear_vel + left_or_right*(MotorParam::TREAD_WIDTH/2)*calculated_angular_vel;
+    float calculated_linear_vel_m = calculated_linear_vel*0.001;
+    float vel = calculated_linear_vel_m + left_or_right*(MotorParam::TREAD_WIDTH/2)*calculated_angular_vel;
     float rotation_speed = (vel/MotorParam::r)*MotorParam::GEAR_RATIO*60/(2*M_PI);
     return rotation_speed;
 }

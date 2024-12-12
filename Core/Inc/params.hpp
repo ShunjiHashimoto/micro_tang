@@ -24,9 +24,9 @@ namespace LinearVelocityPID {
     extern float current_linear_vel;
     extern float calculated_linear_vel;
     extern float current_distance;
-    const float Kp = 2.0;
-    const float Ki = 0.8;
-    const float Kd = 0.0;
+    const float Kp = 0.1;
+    const float Ki = 0.0;
+    const float Kd = 0.0; // 使われていない
     const uint16_t MAX_PID_ERROR_SUM = 10;
     const int16_t MIN_PID_ERROR_SUM = 0;
 }
@@ -39,7 +39,7 @@ namespace AngularVelocityPID {
     extern float calculated_angular_vel;
     extern float current_angle;
     const float Kp = 1.0;
-    const float Ki = 0.8;
+    const float Ki = 0.0;
     const float Kd = 0.0;
     // TODO: PIDのパラメータ調整
     const uint16_t MAX_PID_ERROR_SUM = 60;
@@ -51,9 +51,9 @@ namespace Battery {
 }
 
 namespace RobotControllerParam {
-    const float MAX_SPEED = 0.2; // [mm/s]
-    const float ACCEL = 1.0; // [mm/s^2]
-    const float DECEL = 1.0; // [mm/s^2]
+    const float MAX_SPEED = 200; // [mm/s]
+    const float ACCEL = 100; // [mm/s^2]
+    const float DECEL = 100; // [mm/s^2]
     const float TARGET_DISTANCE = 0.3;
 }
 

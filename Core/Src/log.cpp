@@ -9,7 +9,7 @@ extern "C" {
 
     void updateLog() {
         // std::vector<float> log = {LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel};
-        std::vector<float> log = {LinearVelocityPID::current_linear_vel, LinearVelocityPID::current_distance};
+        std::vector<float> log = {LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel, LinearVelocityPID::current_distance};
         // 四捨五入を適用してlogに再度格納
         for (auto& vel : log) {
             vel = roundToTwoDecimalPlaces(vel);
