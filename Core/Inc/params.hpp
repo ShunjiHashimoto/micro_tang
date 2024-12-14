@@ -8,7 +8,7 @@ namespace MotorParam {
     const float R = 1.07;         // 巻線抵抗[Ω]
     const float GEAR_RATIO = 43.0/13.0;        // ギア比
     const float m = 90.0/1000.0;
-    const float r = 12.0*0.001;           // タイヤ半径[m]
+    const float r = (12.0 + 0.6)*0.001;  // タイヤ半径[m], 両面テープの厚さ分0.1*2
     const int bit = 4096; //
     const float stm32_vat = 3.3;
     const float BAT_RATIO = (25.0/10.0)*(stm32_vat/bit); // 電圧倍率(分圧)*（12bit=4096/3.3V)

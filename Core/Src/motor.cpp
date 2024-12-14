@@ -40,7 +40,7 @@ extern "C" {
         int duty_l = motor_l.calcDuty(torque);
         if(duty_r < 0) duty_r = 0;
         if(duty_l < 0) duty_l = 0;
-        motor_r.duty = duty_r;
+        motor_r.duty = duty_r*1.25;
         motor_l.duty = duty_l;
         motor_r.Run(GPIO_PIN_RESET);
         motor_l.Run(GPIO_PIN_SET); 
