@@ -45,31 +45,6 @@ extern "C" {
         motor_r.Run(GPIO_PIN_RESET);
         motor_l.Run(GPIO_PIN_SET); 
     }
-    // void updateTargetVelocity(float target_distance) {
-        // 制御周期：1[mm/sec]
-    // }
-    // void calcTrapezoidalProfile(float target_distance) {
-    //     Mode::ModeType current_mode = mode_manager.getCurrentMode();
-    //     if(current_mode == Mode::ModeType::WAIT || current_mode == Mode::ModeType::LOG) {
-    //         return;
-    //     }
-    //     if(target_distance = 0.0) return;
-    //     float v_max = RobotControllerParam::MAX_SPEED;
-    //     float a = RobotControllerParam::ACCEL;
-    //     // 加速・減速距離の計算
-    //     float t_acc = v_max/a;
-    //     float d_acc = 0.5*a*t_acc*t_acc;
-    //     // 定速距離の計算
-    //     float d_const = target_distance - 2*d_acc;
-    //     // 定速距離が負の場合は、定速距離をなくし、加速・減速距離のみとする
-    //     if(d_const < 0) {
-    //         d_const = 0;
-    //         d_acc = target_distance/2;
-    //         t_acc = sqrt(2*d_acc/a);
-    //     }
-    //     // 定速距離を最大速度で走行する場合の走行時間
-    //     float t_const = d_const/v_max;
-    // }
 }
 
 float CommonMotorControl::calcTorque(float target_a) {

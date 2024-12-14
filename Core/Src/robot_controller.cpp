@@ -111,7 +111,6 @@ void RobotController::mainControl(){
       printf("cur_LinearVelocityPIDvel %lf tar_vel %lf\n\r", LinearVelocityPID::current_linear_vel, LinearVelocityPID::target_linear_vel);
       printf("current_distance: %lf angle: %lf\n\r", LinearVelocityPID::current_distance, AngularVelocityPID::current_angle);
       this->straight(540);
-      // タイヤ系を調整する必要がある
 
       // 目標速度のみ与える
       // float target_distance = 1000;
