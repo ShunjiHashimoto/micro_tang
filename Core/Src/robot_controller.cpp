@@ -15,10 +15,16 @@ void RobotController::motorControl(float target_linear_vel, float target_angular
 }
 
 void RobotController::straight(float target_distance) { // [mm]
+   float diff = target_distance - LinearVelocityPID::current_distance;
+    // float v_0 = 0.0; // [mm/sec]
+    if(diff < RobotControllerParam::MIN_DISTANCE_TO_RUN) return;
+    LinearVelocityPID::current_distance = 0.0;
+    LinearVelocityPID::current_linear_vel = 0.0;
+
     float v_0 = LinearVelocityPID::current_linear_vel; // [mm/sec]
     float v_max = RobotControllerParam::MAX_SPEED; // [mm/sec]
-    float accel = RobotControllerParam::ACCEL; // [mm/sec^2]
-    float decel = RobotControllerParam::DECEL; // [mm/sec^2]
+    float accel = LinearVelocityPID::target_a; // [mm/sec^2]
+    float decel = LinearVelocityPID::target_a; // [mm/sec^2]
     float t_acc = (v_max - v_0)/accel;
     float AL = 0.5*accel*t_acc*t_acc; // 加速距離[mm]
     float CL = target_distance - AL*2; // 定速距離[mm]
@@ -28,20 +34,28 @@ void RobotController::straight(float target_distance) { // [mm]
     }
     float DL = target_distance - AL - CL; // 減速距離[mm]
 
-    // unsigned long last_update_time = __HAL_TIM_GET_COUNTER(&htim9); 
+    // 1カウントあたり20μs（TIM9）, 200msごとにオーバーフロー 
+    unsigned long prev_count = 0; 
+    float total_time = 0.0;
+    LinearVelocityPID::target_linear_vel = 0.0;
+    AngularVelocityPID::target_angular_vel = 0.0;
+    motor_r.Stop();
+    motor_l.Stop();
+
     while (true) {
-      // unsigned long current_time = __HAL_TIM_GET_COUNTER(&htim9);
-      // unsigned long delta_count;
-      // if (current_time >= last_update_time) {
-      //   delta_count = current_time - last_update_time;
-      // } else {
-      //   delta_count = (10000 - last_update_time) + current_time; // オーバーフロー対応
-      // }
-      // float delta_time = delta_count * 10e-6; // マイクロ秒 → 秒
-      float delta_time = 0.01; // マイクロ秒 → 秒
+      unsigned long current_count= __HAL_TIM_GET_COUNTER(&htim9);
+      unsigned long delta_count;
+      if (current_count >= prev_count) {
+        delta_count = current_count - prev_count;
+      } else {
+        delta_count = (10000 - prev_count) + current_count; // オーバーフロー対応、10000でオーバーフロー
+      }
+      float delta_time = delta_count * 10e-6; // マイクロ秒 → 秒, 0.0125[sec]程度
+      total_time += delta_time;
+      prev_count = current_count;
       // printf("cur_time: %lf, last_update_time: %lf, delta_time: %lf\n\r", current_time, last_update_time, delta_time);
       float diff = target_distance - LinearVelocityPID::current_distance;
-      if(diff < 10) break;
+      if(diff < RobotControllerParam::MIN_DISTANCE_TO_RUN) break;
       // 加速区間
       if(LinearVelocityPID::current_distance < AL){
         LinearVelocityPID::target_linear_vel += accel*delta_time;
@@ -94,9 +108,19 @@ void RobotController::mainControl(){
     if(current_mode == Mode::ModeType::RUN) {
       printf("cur_LinearVelocityPIDvel %lf tar_vel %lf\n\r", LinearVelocityPID::current_linear_vel, LinearVelocityPID::target_linear_vel);
       // printf("tar_vel %lf cur_vel %lf\n\r", AngularVelocityPID::target_angular_vel, this->getCurrentAngularVel());
-      printf("duty_r %d, duty_l %d\n\r", motor_r.duty, motor_l.duty);
+      // printf("duty_r %d, duty_l %d\n\r", motor_r.duty, motor_l.duty);
       printf("current_distance: %lf angle: %lf\n\r", LinearVelocityPID::current_distance, AngularVelocityPID::current_angle);
-      this->straight(100);
+      this->straight(540);
+
+      // 目標速度のみ与える
+      // float target_distance = 1000;
+      // float diff = target_distance - LinearVelocityPID::current_distance;
+      // if (diff < RobotControllerParam::MIN_DISTANCE_TO_RUN) {
+      //   LinearVelocityPID::target_linear_vel = 0.0;
+      //   motor_r.Stop();
+      //   motor_l.Stop();
+      //   return;
+      // }
       // モード更新し、終了
       current_mode = mode_manager.getCurrentMode();
       return;

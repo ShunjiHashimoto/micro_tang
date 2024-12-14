@@ -3,6 +3,7 @@
 #include "main.h"
 #include <vector>
 #include "params.hpp"
+#include "encoder.h"
 
 class Log {
 public:

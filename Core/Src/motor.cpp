@@ -27,9 +27,9 @@ extern "C" {
             return;
         }
         float torque = CommonMotorControl::calcTorque(LinearVelocityPID::target_a);
-        LinearVelocityPID::current_linear_vel = CommonMotorControl::calcCurrentLinearVel(encoder_r.rotation_speed, encoder_l.rotation_speed);
+        LinearVelocityPID::current_linear_vel = CommonMotorControl::calcCurrentLinearVel(encoder_r.rotation_speed, encoder_l.rotation_speed); //[mm]
         AngularVelocityPID::current_angular_vel  = CommonMotorControl::calcCurrentAngularVel(gyro.angular_vel);
-        LinearVelocityPID::current_distance += LinearVelocityPID::current_linear_vel; // 0.001*1000, [mm]
+        LinearVelocityPID::current_distance += LinearVelocityPID::current_linear_vel * 0.001;; // [mm/sec]*0.001[sec]
         AngularVelocityPID::current_angle  += AngularVelocityPID::current_angle * 0.001;
 
         LinearVelocityPID::calculated_linear_vel  = Motor::linearVelocityPIDControl(LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel, LinearVelocityPID::vel_pid_error_sum);
@@ -76,9 +76,12 @@ float CommonMotorControl::calcTorque(float target_a) {
     return (MotorParam::m*target_a*MotorParam::r)/MotorParam::GEAR_RATIO;
 }
 
-// 車体の線形速度vを計算, rotation_speedはモータの角速度w
+// 車体の線形速度v[mm/s]を計算, rotation_speedはモータ（車輪ではなく）の角速度w[rad/s]
 float CommonMotorControl::calcCurrentLinearVel(float rotation_speed_r, float rotation_speed_l) {
-    return ((MotorParam::r*rotation_speed_r) + (MotorParam::r*rotation_speed_l))/2.0;
+    // エンコーダから計算されたrotation_speedは車輪の回転速度
+    float wheel_speed_r = rotation_speed_r;
+    float wheel_speed_l = rotation_speed_l;
+    return 1000*((MotorParam::r*wheel_speed_r) + (MotorParam::r*wheel_speed_l))/2.0;
 }
 
 float CommonMotorControl::calcCurrentAngularVel(float angular_vel) {
