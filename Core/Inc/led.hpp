@@ -7,6 +7,7 @@
 
 #ifndef INC_LED_HPP_
 #define INC_LED_HPP_
+#include "stm32f4xx_hal.h"
 
 class LedBlink {
 public:
@@ -16,8 +17,8 @@ public:
 
 class LedSensor {
 public:
-    void blink();
-    // void stop();
+    void blink(GPIO_TypeDef  *GPIOx, uint16_t GPIO_Pinx);
+    void stop(GPIO_TypeDef  *GPIOx, uint16_t GPIO_Pinx);
 };
 
 

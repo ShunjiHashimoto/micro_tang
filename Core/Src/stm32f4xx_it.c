@@ -67,6 +67,7 @@ Gyro gyro;
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
+extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim9;
 extern TIM_HandleTypeDef htim12;
 /* USER CODE BEGIN EV */
@@ -259,7 +260,6 @@ void TIM8_BRK_TIM12_IRQHandler(void)
   /* USER CODE END TIM8_BRK_TIM12_IRQn 0 */
   HAL_TIM_IRQHandler(&htim12);
   /* USER CODE BEGIN TIM8_BRK_TIM12_IRQn 1 */
-  // ledSensorBlink(RR_LED_GPIO_Port, RR_LED_Pin);
 
   /* USER CODE END TIM8_BRK_TIM12_IRQn 1 */
 }
@@ -278,6 +278,29 @@ void TIM5_IRQHandler(void)
   /* USER CODE BEGIN TIM5_IRQn 1 */
 
   /* USER CODE END TIM5_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM7 global interrupt.
+  */
+void TIM7_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM7_IRQn 0 */
+  // HAL_GPIO_WritePin(RR_LED_GPIO_Port, RR_LED_Pin, GPIO_PIN_SET); //LEDを点灯
+  // HAL_Delay(100);
+  // HAL_GPIO_WritePin(RR_LED_GPIO_Port, RR_LED_Pin, GPIO_PIN_RESET); //LEDを点灯
+  // HAL_Delay(100);
+
+  // ledSensorBlink(RR_LED_GPIO_Port, RR_LED_Pin);
+  // ledSensorBlink(RF_LED_GPIO_Port, RF_LED_Pin);
+  // ledSensorBlink(LL_LED_GPIO_Port, LL_LED_Pin);
+  // ledSensorBlink(LF_LED_GPIO_Port, LF_LED_Pin);
+
+  /* USER CODE END TIM7_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim7);
+  /* USER CODE BEGIN TIM7_IRQn 1 */
+
+  /* USER CODE END TIM7_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

@@ -27,6 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "led.hpp"
+#include "photo_trans.hpp"
 // #include "params.hpp"
 #include "robot_controller.hpp"
 
@@ -68,11 +69,13 @@ extern "C" int __io_putchar(int ch) {
 void initInterrupt(void) {
   // tim1: モータ
   // tim2,3: encoder
-  // tim4: 
-  // tim5:
-  // tim9: 車体制御 (1ms)
+  // tim4: encoder値の計算(1ms)
+  // tim5: モータの制御(1ms)
+  // tim7: led_sensor(250μsec, prescaler 840-1, counter period 400-1)
+  // tim9, 12: 車体制御 , 未実装(1ms)
   HAL_TIM_Base_Start_IT(&htim4); // 割り込み処理開始
   HAL_TIM_Base_Start_IT(&htim5);
+  HAL_TIM_Base_Start_IT(&htim7);
   HAL_TIM_Base_Start_IT(&htim9);
   HAL_TIM_Base_Start_IT(&htim12);
   initEncoder(&encoder_l, &htim2, MotorParam::PULSE_PER_TIRE_ONEROTATION, true);
@@ -95,6 +98,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
   LedBlink ledBlink;
   LedSensor led_sensor;
+  PhotoTransSensor photo_trans_sensor;
   RobotController robot_controller;
 
   /* USER CODE END 1 */
@@ -128,6 +132,7 @@ int main(void)
   MX_TIM5_Init();
   MX_TIM9_Init();
   MX_TIM12_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
   setbuf(stdout, NULL); // std::outのバッファリングを無効にし、ログを即出力する
   gyroInit(&gyro);
@@ -139,9 +144,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1){
     // ledBlink.toggle();
-    led_sensor.blink();
-    robot_controller.mainControl();
-    HAL_Delay(MotorParam::RATE);
+    photo_trans_sensor.getWallSensorData();
+    // robot_controller.mainControl();
+    // HAL_Delay(MotorParam::RATE);
     // printf("encoder_l: %lf, encoder_r: %lf\n\r", encoder_l.rotation_speed, encoder_r.rotation_speed);
     /* USER CODE END WHILE */
 
