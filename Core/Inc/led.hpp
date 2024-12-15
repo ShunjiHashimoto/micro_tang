@@ -14,5 +14,11 @@ public:
     void stop();
 };
 
+class LedSensor {
+public:
+    void blink();
+    // void stop();
+};
+
 
 #endif /* INC_LED_HPP_ */

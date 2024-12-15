@@ -66,10 +66,15 @@ extern "C" int __io_putchar(int ch) {
     return ch;
 }
 void initInterrupt(void) {
+  // tim1: モータ
+  // tim2,3: encoder
+  // tim4: 
+  // tim5:
+  // tim9: 車体制御 (1ms)
   HAL_TIM_Base_Start_IT(&htim4); // 割り込み処理開始
-  HAL_TIM_Base_Start_IT(&htim5); // 割り込み処理開始
-  HAL_TIM_Base_Start_IT(&htim9); // 割り込み処理開始
-  HAL_TIM_Base_Start_IT(&htim12); // 割り込み処理開始
+  HAL_TIM_Base_Start_IT(&htim5);
+  HAL_TIM_Base_Start_IT(&htim9);
+  HAL_TIM_Base_Start_IT(&htim12);
   initEncoder(&encoder_l, &htim2, MotorParam::PULSE_PER_TIRE_ONEROTATION, true);
   initEncoder(&encoder_r, &htim3, MotorParam::PULSE_PER_TIRE_ONEROTATION, false);
 }
@@ -89,6 +94,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   LedBlink ledBlink;
+  LedSensor led_sensor;
   RobotController robot_controller;
 
   /* USER CODE END 1 */
@@ -132,7 +138,8 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1){
-    ledBlink.toggle();
+    // ledBlink.toggle();
+    led_sensor.blink();
     robot_controller.mainControl();
     HAL_Delay(MotorParam::RATE);
     // printf("encoder_l: %lf, encoder_r: %lf\n\r", encoder_l.rotation_speed, encoder_r.rotation_speed);
