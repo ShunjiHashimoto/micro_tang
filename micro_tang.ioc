@@ -1,11 +1,14 @@
 #MicroXplorer Configuration settings - do not modify
 ADC1.Channel-1\#ChannelRegularConversion=ADC_CHANNEL_9
+ADC1.Channel-2\#ChannelRegularConversion=ADC_CHANNEL_13
 ADC1.DiscontinuousConvMode=ENABLE
 ADC1.EOCSelection=ADC_EOC_SEQ_CONV
-ADC1.IPParameters=master,NbrOfConversionFlag,Channel-1\#ChannelRegularConversion,SamplingTime-1\#ChannelRegularConversion,ScanConvMode,DiscontinuousConvMode,EOCSelection,NbrOfConversion
-ADC1.NbrOfConversion=1
+ADC1.IPParameters=master,NbrOfConversionFlag,Channel-1\#ChannelRegularConversion,SamplingTime-1\#ChannelRegularConversion,ScanConvMode,DiscontinuousConvMode,EOCSelection,NbrOfConversion,Rank-2\#ChannelRegularConversion,Channel-2\#ChannelRegularConversion,SamplingTime-2\#ChannelRegularConversion
+ADC1.NbrOfConversion=2
 ADC1.NbrOfConversionFlag=1
+ADC1.Rank-2\#ChannelRegularConversion=2
 ADC1.SamplingTime-1\#ChannelRegularConversion=ADC_SAMPLETIME_28CYCLES
+ADC1.SamplingTime-2\#ChannelRegularConversion=ADC_SAMPLETIME_28CYCLES
 ADC1.ScanConvMode=ENABLE
 ADC1.master=1
 ADC2.Channel-1\#ChannelRegularConversion=ADC_CHANNEL_2
