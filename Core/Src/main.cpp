@@ -19,7 +19,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
-#include "dma.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -122,7 +121,6 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_USART3_UART_Init();
   MX_ADC1_Init();
   MX_TIM1_Init();
@@ -140,8 +138,6 @@ int main(void)
   gyroInit(&gyro);
   initInterrupt();
   updateBattery();
-  uint16_t adc_Value[4];
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_Value, 4);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -149,9 +145,9 @@ int main(void)
   while (1){
     // ledBlink.toggle();
     // photo_trans_sensor.getWallSensorData();
-    printf("LL_ADC =%d, RF_ADC =%d, LF_ADC =%d, RR_ADC =%d\n\r", adc_Value[0], adc_Value[1], adc_Value[2], adc_Value[3]);
-    // robot_controller.mainControl();
-    // HAL_Delay(MotorParam::RATE);
+    // printf("LL_ADC =%d, RF_ADC =%d, LF_ADC =%d, RR_ADC =%d\n\r", ADCParam::adc_val[0], ADCParam::adc_val[1], ADCParam::adc_val[2], ADCParam::adc_val[3]);
+    robot_controller.mainControl();
+    HAL_Delay(MotorParam::RATE);
     // printf("encoder_l: %lf, encoder_r: %lf\n\r", encoder_l.rotation_speed, encoder_r.rotation_speed);
     /* USER CODE END WHILE */
 

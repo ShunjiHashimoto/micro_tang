@@ -24,3 +24,7 @@ namespace Battery {
 namespace Mode {
     uint8_t current_mode = 0;
 }
+
+namespace ADCParam {
+    uint16_t adc_val[4] = {0};
+}

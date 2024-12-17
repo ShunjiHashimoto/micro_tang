@@ -29,6 +29,7 @@ extern void pwmControl();
 extern void updateModeManager();
 extern void updateLog();
 extern void ledSensorBlink(GPIO_TypeDef  *GPIOx, uint16_t GPIO_Pinx);
+extern void readADC(int i);
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,7 +51,8 @@ extern void ledSensorBlink(GPIO_TypeDef  *GPIOx, uint16_t GPIO_Pinx);
 /* USER CODE BEGIN PV */
 Encoder encoder_r;
 Encoder encoder_l;
-Gyro gyro;
+Gyro gyro; 
+int adc_index = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -64,7 +66,6 @@ Gyro gyro;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern DMA_HandleTypeDef hdma_adc1;
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
@@ -287,35 +288,15 @@ void TIM5_IRQHandler(void)
 void TIM7_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM7_IRQn 0 */
-  // HAL_GPIO_WritePin(RR_LED_GPIO_Port, RR_LED_Pin, GPIO_PIN_SET); //LEDを点灯
-  // HAL_Delay(100);
-  // HAL_GPIO_WritePin(RR_LED_GPIO_Port, RR_LED_Pin, GPIO_PIN_RESET); //LEDを点灯
-  // HAL_Delay(100);
-
-  // ledSensorBlink(RR_LED_GPIO_Port, RR_LED_Pin);
-  // ledSensorBlink(RF_LED_GPIO_Port, RF_LED_Pin);
-  // ledSensorBlink(LL_LED_GPIO_Port, LL_LED_Pin);
-  // ledSensorBlink(LF_LED_GPIO_Port, LF_LED_Pin);
 
   /* USER CODE END TIM7_IRQn 0 */
   HAL_TIM_IRQHandler(&htim7);
   /* USER CODE BEGIN TIM7_IRQn 1 */
+  int current_index = adc_index%4;
+  readADC(current_index);
+  adc_index++;
 
   /* USER CODE END TIM7_IRQn 1 */
-}
-
-/**
-  * @brief This function handles DMA2 stream0 global interrupt.
-  */
-void DMA2_Stream0_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA2_Stream0_IRQn 0 */
-
-  /* USER CODE END DMA2_Stream0_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_adc1);
-  /* USER CODE BEGIN DMA2_Stream0_IRQn 1 */
-
-  /* USER CODE END DMA2_Stream0_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

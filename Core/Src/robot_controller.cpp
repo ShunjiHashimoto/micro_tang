@@ -1,6 +1,7 @@
 #include "robot_controller.hpp"
 
 extern ModeManager mode_manager;
+extern PhotoTransSensor photo_trans_sensor;
 extern Motor motor_l;
 extern Motor motor_r;
 extern Log vel_log;
@@ -121,6 +122,12 @@ void RobotController::mainControl(){
       //   motor_l.Stop();
       //   return;
       // }
+      for(int i=0; i<4; i++){
+        auto adc_val = photo_trans_sensor.getCurrentADC(i);
+        printf("adc_val[%d]: %d\n\r", i, adc_val);
+      }
+      printf("Finished 1 loop\n\r");
+      HAL_Delay(200);
       // モード更新し、終了
       current_mode = mode_manager.getCurrentMode();
       return;

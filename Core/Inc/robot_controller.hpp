@@ -7,6 +7,7 @@
 #include "motor.hpp"
 #include "log.hpp"
 #include "adc.h"
+#include "photo_trans.hpp"
 
 
 // TODO:

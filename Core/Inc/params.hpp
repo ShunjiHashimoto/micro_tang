@@ -65,4 +65,8 @@ namespace Mode {
         LOG
     };
 }
+
+namespace ADCParam {
+    const int SENSOR_COUNT = 4;
+}
 #endif // INC_PARAMS_HPP
