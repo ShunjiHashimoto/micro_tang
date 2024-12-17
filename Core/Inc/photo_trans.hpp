@@ -5,6 +5,7 @@
 #include "adc.h"
 #include "tim.h"
 #include "stm32f4xx_hal.h"
+#include "stm32f405xx.h"
 #include "led.hpp"
 
 class PhotoTransSensor {

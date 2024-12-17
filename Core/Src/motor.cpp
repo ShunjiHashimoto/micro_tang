@@ -30,7 +30,7 @@ extern "C" {
         LinearVelocityPID::current_linear_vel = CommonMotorControl::calcCurrentLinearVel(encoder_r.rotation_speed, encoder_l.rotation_speed); //[mm]
         AngularVelocityPID::current_angular_vel  = CommonMotorControl::calcCurrentAngularVel(gyro.angular_vel);
         LinearVelocityPID::current_distance += LinearVelocityPID::current_linear_vel * 0.001;; // [mm/sec]*0.001[sec]
-        AngularVelocityPID::current_angle  += AngularVelocityPID::current_angle * 0.001;
+        AngularVelocityPID::current_angle  += AngularVelocityPID::current_angular_vel * 0.001;
 
         LinearVelocityPID::calculated_linear_vel  = Motor::linearVelocityPIDControl(LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel, LinearVelocityPID::vel_pid_error_sum);
         AngularVelocityPID::calculated_angular_vel = Motor::angularVelocityPIDControl(AngularVelocityPID::target_angular_vel, AngularVelocityPID::current_angular_vel, AngularVelocityPID::w_pid_error_sum);

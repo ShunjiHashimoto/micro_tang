@@ -106,11 +106,11 @@ void RobotController::mainControl(){
     Mode::ModeType current_mode = mode_manager.getCurrentMode();
 
     if(current_mode == Mode::ModeType::RUN) {
-      // printf("tar_vel %lf cur_vel %lf\n\r", AngularVelocityPID::target_angular_vel, this->getCurrentAngularVel());
+      // printf("tar_vel %lf cur_vel %lf, cur_angle %lf\n\r", AngularVelocityPID::target_angular_vel, this->getCurrentAngularVel(), AngularVelocityPID::current_angle);
       // printf("duty_r %d, duty_l %d\n\r", motor_r.duty, motor_l.duty);
-      printf("cur_LinearVelocityPIDvel %lf tar_vel %lf\n\r", LinearVelocityPID::current_linear_vel, LinearVelocityPID::target_linear_vel);
-      printf("current_distance: %lf angle: %lf\n\r", LinearVelocityPID::current_distance, AngularVelocityPID::current_angle);
-      this->straight(540);
+      // printf("cur_LinearVelocityPIDvel %lf tar_vel %lf\n\r", LinearVelocityPID::current_linear_vel, LinearVelocityPID::target_linear_vel);
+      // printf("current_distance: %lf angle: %lf\n\r", LinearVelocityPID::current_distance, AngularVelocityPID::current_angle);
+      // this->straight(540);
 
       // 目標速度のみ与える
       // float target_distance = 1000;
