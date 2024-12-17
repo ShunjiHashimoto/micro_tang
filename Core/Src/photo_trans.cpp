@@ -1,9 +1,5 @@
 #include "../../Core/Inc/photo_trans.hpp"
 
-// IN15: LF_ADC
-// IN13: RF_ADC
-// IN11: RR_ADC
-// IN9:  LL_ADC
 void PhotoTransSensor::getWallSensorData() {
     uint16_t a[4];
     GPIO_TypeDef* LED_PORTS[4] = {LL_LED_GPIO_Port, RF_LED_GPIO_Port, LF_LED_GPIO_Port, RR_LED_GPIO_Port};
@@ -18,5 +14,11 @@ void PhotoTransSensor::getWallSensorData() {
             HAL_Delay(1);
         }
     }
+ 
     printf("LL_ADC =%d, RF_ADC =%d, LF_ADC =%d, RR_ADC =%d\n\r", a[0], a[1], a[2], a[3]);
 }
+
+// IN15: LF_ADC
+// IN13: RF_ADC
+// IN11: RR_ADC
+// IN9:  LL_ADC
