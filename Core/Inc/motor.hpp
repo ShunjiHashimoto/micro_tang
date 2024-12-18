@@ -19,7 +19,6 @@
 
 namespace CommonMotorControl {
     float calcCurrentLinearVel(float rotation_speed_r, float rotation_speed_l);
-    float calcCurrentAngularVel(float angular_vel);
     float calcTorque(float target_a);
     void resetTargetVelocity();
 }

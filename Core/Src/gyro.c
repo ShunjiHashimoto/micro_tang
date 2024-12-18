@@ -73,7 +73,8 @@ void updateGyro(Gyro* gyro_) {
     zout_h = Gyro_ReadByte(0x37);
     zout_l = Gyro_ReadByte(0x38);
     int16_t gyro_raw = (((uint16_t)zout_h<<8)&0xff00)|zout_l;
-    gyro_->angular_vel = GYRO_OFFSET + (float)gyro_raw / SENSITIVITY_SCALE_FACTOR;
+    float gyro_gain = (gyro_raw < 0) ? GYRO_GAIN_R : GYRO_GAIN_L;
+    gyro_->angular_vel = gyro_gain*(GYRO_OFFSET + (float)gyro_raw / SENSITIVITY_SCALE_FACTOR)*M_PI/180.0;
     gyro_->yaw_deg += gyro_->angular_vel * 0.001;
 }
 

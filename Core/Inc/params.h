@@ -7,6 +7,7 @@
 
 #define SENSITIVITY_SCALE_FACTOR 16.4 
 #define GYRO_OFFSET 2.558
-#define GYRO_GAIN 0.09 // IMUが-2000~2000だったので、-180~180にするために0.90をかけた
+#define GYRO_GAIN_R 0.12 // IMUが-1600 ~ 1600だったので、-180~180にするために0.12をかけた
+#define GYRO_GAIN_L 0.13 // IMU値が左右方向で差があったためゲインを少し変更
 
 #endif

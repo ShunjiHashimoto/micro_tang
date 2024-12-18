@@ -28,9 +28,9 @@ extern "C" {
         }
         float torque = CommonMotorControl::calcTorque(LinearVelocityPID::target_a);
         LinearVelocityPID::current_linear_vel = CommonMotorControl::calcCurrentLinearVel(encoder_r.rotation_speed, encoder_l.rotation_speed); //[mm]
-        AngularVelocityPID::current_angular_vel  = CommonMotorControl::calcCurrentAngularVel(gyro.angular_vel);
         LinearVelocityPID::current_distance += LinearVelocityPID::current_linear_vel * 0.001;; // [mm/sec]*0.001[sec]
-        AngularVelocityPID::current_angle  += AngularVelocityPID::current_angular_vel * 0.001;
+        AngularVelocityPID::current_angular_vel  = gyro.angular_vel;
+        AngularVelocityPID::current_angle = gyro.yaw_deg;
 
         LinearVelocityPID::calculated_linear_vel  = Motor::linearVelocityPIDControl(LinearVelocityPID::target_linear_vel, LinearVelocityPID::current_linear_vel, LinearVelocityPID::vel_pid_error_sum);
         AngularVelocityPID::calculated_angular_vel = Motor::angularVelocityPIDControl(AngularVelocityPID::target_angular_vel, AngularVelocityPID::current_angular_vel, AngularVelocityPID::w_pid_error_sum);
@@ -42,8 +42,8 @@ extern "C" {
         if(duty_l < 0) duty_l = 0;
         motor_r.duty = duty_r*1.25;
         motor_l.duty = duty_l;
-        motor_r.Run(GPIO_PIN_RESET);
-        motor_l.Run(GPIO_PIN_SET); 
+        // motor_r.Run(GPIO_PIN_RESET);
+        // motor_l.Run(GPIO_PIN_SET); 
     }
 }
 
@@ -57,10 +57,6 @@ float CommonMotorControl::calcCurrentLinearVel(float rotation_speed_r, float rot
     float wheel_speed_r = rotation_speed_r;
     float wheel_speed_l = rotation_speed_l;
     return 1000*((MotorParam::r*wheel_speed_r) + (MotorParam::r*wheel_speed_l))/2.0;
-}
-
-float CommonMotorControl::calcCurrentAngularVel(float angular_vel) {
-    return angular_vel*GYRO_GAIN*M_PI/180;
 }
 
 void CommonMotorControl::resetTargetVelocity() {

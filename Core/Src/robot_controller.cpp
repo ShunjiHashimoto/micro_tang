@@ -79,9 +79,14 @@ void RobotController::straight(float target_distance) { // [mm]
 }
 
 void RobotController::turn_right(uint16_t target_deg) {
-    while(true) {
-
+    float target_rad = degToRad(target_deg);
+    float diff = 9999.0;
+    while(diff > 0) {
+      diff = target_rad - AngularVelocityPID::current_angle;
+      printf("target_deg: %d, current_deg: %d, diff: %lf\n\r", target_deg, radToDeg(AngularVelocityPID::current_angle), diff);
     }
+    printf("Finished: %lf\n\r", diff);
+    // this->allMotorStop();
     return;
 }
 
@@ -126,6 +131,7 @@ void RobotController::mainControl(){
       // printf("cur_LinearVelocityPIDvel %lf tar_vel %lf\n\r", LinearVelocityPID::current_linear_vel, LinearVelocityPID::target_linear_vel);
       // printf("current_distance: %lf angle: %lf\n\r", LinearVelocityPID::current_distance, AngularVelocityPID::current_angle);
       // this->straight(540);
+      this->turn_right(90);
 
       // 目標速度のみ与える
       // float target_distance = 1000;
@@ -136,10 +142,10 @@ void RobotController::mainControl(){
       //   motor_l.Stop();
       //   return;
       // }
-      for(int i=0; i<4; i++){
-        auto adc_val = photo_trans_sensor.getCurrentADC(i);
+      // for(int i=0; i<4; i++){
+        // auto adc_val = photo_trans_sensor.getCurrentADC(i);
         // printf("adc_val[%d]: %d\n\r", i, adc_val);
-      }
+      // }
       // printf("Finished 1 loop\n\r");
       HAL_Delay(200);
       // モード更新し、終了
