@@ -292,6 +292,7 @@ void TIM7_IRQHandler(void)
   /* USER CODE END TIM7_IRQn 0 */
   HAL_TIM_IRQHandler(&htim7);
   /* USER CODE BEGIN TIM7_IRQn 1 */
+  // 250μsで割り込み
   int current_index = adc_index%4;
   readADC(current_index);
   adc_index++;
