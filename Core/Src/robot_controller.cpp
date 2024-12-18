@@ -15,6 +15,14 @@ void RobotController::motorControl(float target_linear_vel, float target_angular
     return;
 }
 
+void RobotController::allMotorStop() {
+    LinearVelocityPID::target_linear_vel = 0.0;
+    AngularVelocityPID::target_angular_vel = 0.0;
+    motor_r.Stop();
+    motor_l.Stop();
+    return;
+}
+
 void RobotController::straight(float target_distance) { // [mm]
    float diff = target_distance - LinearVelocityPID::current_distance;
     // float v_0 = 0.0; // [mm/sec]
@@ -38,23 +46,13 @@ void RobotController::straight(float target_distance) { // [mm]
     // 1カウントあたり20μs（TIM9）, 200msごとにオーバーフロー 
     unsigned long prev_count = 0; 
     float total_time = 0.0;
-    LinearVelocityPID::target_linear_vel = 0.0;
-    AngularVelocityPID::target_angular_vel = 0.0;
-    motor_r.Stop();
-    motor_l.Stop();
+    this->allMotorStop();
 
     while (true) {
-      unsigned long current_count= __HAL_TIM_GET_COUNTER(&htim9);
-      unsigned long delta_count;
-      if (current_count >= prev_count) {
-        delta_count = current_count - prev_count;
-      } else {
-        delta_count = (10000 - prev_count) + current_count; // オーバーフロー対応、10000でオーバーフロー
-      }
-      float delta_time = delta_count * 10e-6; // マイクロ秒 → 秒, 0.0125[sec]程度
+      unsigned long current_count = __HAL_TIM_GET_COUNTER(&htim9);
+      float delta_time = calculateDeltaTime(current_count, prev_count, 10000); // タイマーの最大カウント値を10000と仮定
       total_time += delta_time;
       prev_count = current_count;
-      // printf("cur_time: %lf, last_update_time: %lf, delta_time: %lf\n\r", current_time, last_update_time, delta_time);
       float diff = target_distance - LinearVelocityPID::current_distance;
       if(diff < RobotControllerParam::MIN_DISTANCE_TO_RUN) break;
       // 加速区間
@@ -76,15 +74,31 @@ void RobotController::straight(float target_distance) { // [mm]
       if(LinearVelocityPID::target_linear_vel < 0) LinearVelocityPID::target_linear_vel = 0.0;
     }
     printf("stop\n\r");
-    LinearVelocityPID::target_linear_vel = 0.0;
-    AngularVelocityPID::target_angular_vel = 0.0;
-    motor_r.Stop();
-    motor_l.Stop();
+    this->allMotorStop();
     return;
 }
 
-void RobotController::linearRun(float distance) {
-    // 指定した距離を走行する
+void RobotController::turn_right(uint16_t target_deg) {
+    while(true) {
+
+    }
+    return;
+}
+
+void RobotController::turn_left(uint16_t target_deg) {
+    return;
+}
+
+// タイマーのカウント値を基にデルタ時間を計算する関数
+float RobotController::calculateDeltaTime(unsigned long current_count, unsigned long& prev_count, unsigned long timer_max_count) {
+    unsigned long delta_count;
+    if (current_count >= prev_count) {
+        delta_count = current_count - prev_count;
+    } else {
+        delta_count = (timer_max_count - prev_count) + current_count; // オーバーフロー対応
+    }
+    prev_count = current_count;
+    return delta_count * 10e-6; // マイクロ秒 -> 秒
 }
 
 float RobotController::getCalculatedLinearVel() {
