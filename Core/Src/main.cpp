@@ -71,7 +71,7 @@ void initInterrupt(void) {
   // tim2,3: encoder
   // tim4: encoder値の計算(1ms)
   // tim5: モータの制御(1ms)
-  // tim7: led_sensor(250μsec, prescaler 840-1, counter period 400-1)
+  // tim7: (1000-1, 10000-1)led_sensor(250μsec, prescaler 840-1, counter period 400-1)
   // tim9, 12: 車体制御 , 未実装(1ms)
   HAL_TIM_Base_Start_IT(&htim4); // 割り込み処理開始
   HAL_TIM_Base_Start_IT(&htim5);

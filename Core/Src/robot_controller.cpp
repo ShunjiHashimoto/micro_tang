@@ -124,9 +124,9 @@ void RobotController::mainControl(){
       // }
       for(int i=0; i<4; i++){
         auto adc_val = photo_trans_sensor.getCurrentADC(i);
-        printf("adc_val[%d]: %d\n\r", i, adc_val);
+        // printf("adc_val[%d]: %d\n\r", i, adc_val);
       }
-      printf("Finished 1 loop\n\r");
+      // printf("Finished 1 loop\n\r");
       HAL_Delay(200);
       // モード更新し、終了
       current_mode = mode_manager.getCurrentMode();
