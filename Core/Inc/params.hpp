@@ -79,6 +79,16 @@ namespace Mode {
 }
 
 namespace ADCParam {
+    // 左センサadc_val[0]: 中心, 50~72   | 左壁, 297~310 | 右壁, 27~48   | 前壁, 770~778 
+    // 右センサadc_val[3]: 中心, 27~40   | 左壁, 6~10    | 右壁, 528~531 | 前壁, 650~651
+    // 左前センサadc_val[2]: 中心, 360~373 | 左壁, 413~427 | 右壁, 244~256
+    // 右前センサadc_val[1]: 中心, 555~564 | 左壁, 265~271 | 右壁, 1320~1336 
+    const int SENSOR_OFFSET = +564-373;
+    const int SENSOR_OFFSET_L = 373;
+    const int SENSOR_OFFSET_R = 564;
+    const float SENSOR_GAIN = 2.61666/1000; // 2.61666 → 1000
+    const float SENSOR_GAIN_R = 1.0/1000; // 2.61666 → 1000
+    const float SENSOR_GAIN_L = 5/1000; // 2.61666 → 1000
     const int SENSOR_COUNT = 4;
 }
 #endif // INC_PARAMS_HPP

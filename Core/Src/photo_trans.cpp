@@ -14,6 +14,7 @@ extern "C" {
 }
 
 void PhotoTransSensor::updateADC(int i){
+    // [2]が左前センサ、[1]が右前センサ, [0]は左センサ、[3]が右センサ
     // LED点灯
     HAL_GPIO_WritePin(this->LED_PORTS[i], this->LED_PINS[i], GPIO_PIN_SET);
     for(int j=0; j<200; j++) {}
@@ -41,4 +42,18 @@ void PhotoTransSensor::configureADCChannel(uint32_t channel) {
 
 uint16_t PhotoTransSensor::getCurrentADC(int i) const {
     return this->adc_val[i];
+}
+
+int16_t PhotoTransSensor::getDiffADCBothWall() const {
+    return int(-adc_val[2] + adc_val[1]) - ADCParam::SENSOR_OFFSET;
+}
+
+// 左壁制御（右壁がないとき）
+uint16_t PhotoTransSensor::getDiffADCLeftOneWall() const {
+    return this->adc_val[2] - ADCParam::SENSOR_OFFSET_L;
+}
+
+// 右壁制御（左壁がないとき）
+uint16_t PhotoTransSensor::getDiffADCRightOneWall() const {
+    return this->adc_val[1] - ADCParam::SENSOR_OFFSET_R;
 }
