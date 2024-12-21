@@ -16,6 +16,7 @@
 
 class RobotController {
     public:
+        bool is_running;
         RobotController();
         void mainControl();
         void motorControl(float target_linear_vel, float target_angular_vel);

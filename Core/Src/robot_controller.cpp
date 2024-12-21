@@ -7,6 +7,7 @@ extern Motor motor_r;
 extern Log vel_log;
 
 RobotController::RobotController(){
+  this->is_running = true;
 };
 
 void RobotController::motorControl(float target_linear_vel, float target_angular_vel) {
@@ -20,6 +21,7 @@ void RobotController::allMotorStop() {
     AngularVelocityPID::target_angular_vel = 0.0;
     motor_r.Stop();
     motor_l.Stop();
+    this->is_running = false;
     return;
 }
 
@@ -47,6 +49,7 @@ void RobotController::straight(float target_distance) { // [mm]
     unsigned long prev_count = 0; 
     float total_time = 0.0;
     this->allMotorStop();
+    this->is_running = true;
 
     while (true) {
       unsigned long current_count = __HAL_TIM_GET_COUNTER(&htim9);
@@ -54,22 +57,28 @@ void RobotController::straight(float target_distance) { // [mm]
       total_time += delta_time;
       prev_count = current_count;
       float diff = target_distance - LinearVelocityPID::current_distance;
+      AngularVelocityPID::target_angular_vel = 0.0;
+      AngularVelocityPID::w_pid_error_sum = 0.0;
       if(diff < RobotControllerParam::MIN_DISTANCE_TO_RUN) break;
       // 加速区間
       if(LinearVelocityPID::current_distance < AL){
         LinearVelocityPID::target_linear_vel += accel*delta_time;
-        printf("accel, diff: %lf, target_vel: %lf, delta_time: %lf\n\r", diff, LinearVelocityPID::target_linear_vel, delta_time);
+        // printf("accel, diff: %lf, target_vel: %lf, delta_time: %lf\n\r", diff, LinearVelocityPID::target_linear_vel, delta_time);
       }
       // 定速区間
       else if (LinearVelocityPID::current_distance >= AL && LinearVelocityPID::current_distance <= (AL+CL)) {
         LinearVelocityPID::target_linear_vel = v_max;
-        printf("const, diff: %lf, target_vel: %lf, delta_time: %lf\n\r", diff, v_max, delta_time);
+        // printf("const, diff: %lf, target_vel: %lf, delta_time: %lf\n\r", diff, v_max, delta_time);
       }
       // 減速区間
       else if (LinearVelocityPID::current_distance > (AL+CL) && LinearVelocityPID::current_distance <= (AL+CL+DL)) {
         LinearVelocityPID::target_linear_vel -= decel*delta_time;
+        if(LinearVelocityPID::target_linear_vel < LinearVelocityPID::MIN_SPEED) {
+          LinearVelocityPID::target_linear_vel = LinearVelocityPID::MIN_SPEED;
+        }
         printf("decel, diff: %lf, target_vel: %lf, delta_time: %lf\n\r", diff, LinearVelocityPID::target_linear_vel, delta_time);
       }
+      printf("adc_bat: %lf, calculated_linear_vel: %lf, calculated_angular_vel: %lf, motor_r.rotation_speed: %lf, motor_l.rotation_speed: %lf, motor_r.duty: %d, motor_l.duty: %d, target_angular_vel: %lf, current_angular_vel: %lf, current_deg: %d, diff: %lf\n\r", Battery::adc_bat, LinearVelocityPID::calculated_linear_vel, AngularVelocityPID::calculated_angular_vel, motor_r.rotation_speed, motor_l.rotation_speed, motor_r.duty, motor_l.duty, AngularVelocityPID::target_angular_vel, AngularVelocityPID::current_angular_vel, radToDeg(AngularVelocityPID::current_angle), diff);
       if(LinearVelocityPID::target_linear_vel > v_max) LinearVelocityPID::target_linear_vel = v_max;
       if(LinearVelocityPID::target_linear_vel < 0) LinearVelocityPID::target_linear_vel = 0.0;
     }
@@ -79,18 +88,30 @@ void RobotController::straight(float target_distance) { // [mm]
 }
 
 void RobotController::turn_right(uint16_t target_deg) {
+    AngularVelocityPID::target_angular_vel = degToRad(-150); // [rad/s]
+    // LinearVelocityPID::target_linear_vel = 10; //[mm/s]
     float target_rad = degToRad(target_deg);
     float diff = 9999.0;
     while(diff > 0) {
-      diff = target_rad - AngularVelocityPID::current_angle;
-      printf("target_deg: %d, current_deg: %d, diff: %lf\n\r", target_deg, radToDeg(AngularVelocityPID::current_angle), diff);
+      diff = target_rad - abs(AngularVelocityPID::current_angle);
+      printf("adc_bat: %lf, calculated_linear_vel: %lf, calculated_angular_vel: %lf, motor_r.rotation_speed: %lf, motor_l.rotation_speed: %lf, motor_r.duty: %d, motor_l.duty: %d, target_deg: %d, target_angular_vel: %lf, current_angular_vel: %lf, current_deg: %d, diff: %lf\n\r", Battery::adc_bat, LinearVelocityPID::calculated_linear_vel, AngularVelocityPID::calculated_angular_vel, motor_r.rotation_speed, motor_l.rotation_speed, motor_r.duty, motor_l.duty, target_deg, AngularVelocityPID::target_angular_vel, AngularVelocityPID::current_angular_vel, radToDeg(AngularVelocityPID::current_angle), diff);
     }
     printf("Finished: %lf\n\r", diff);
-    // this->allMotorStop();
+    this->allMotorStop();
     return;
 }
 
 void RobotController::turn_left(uint16_t target_deg) {
+    AngularVelocityPID::target_angular_vel = degToRad(150); // [rad/s]
+    // LinearVelocityPID::target_linear_vel = 10; //[mm/s]
+    float target_rad = degToRad(target_deg);
+    float diff = 9999.0;
+    while(diff > 0) {
+      diff = target_rad - AngularVelocityPID::current_angle;
+      printf("adc_bat: %lf, calculated_linear_vel: %lf, calculated_angular_vel: %lf, motor_r.rotation_speed: %lf, motor_l.rotation_speed: %lf, motor_r.duty: %d, motor_l.duty: %d, target_deg: %d, target_angular_vel: %lf, current_angular_vel: %lf, current_deg: %d, diff: %lf\n\r", Battery::adc_bat, LinearVelocityPID::calculated_linear_vel, AngularVelocityPID::calculated_angular_vel, motor_r.rotation_speed, motor_l.rotation_speed, motor_r.duty, motor_l.duty, target_deg, AngularVelocityPID::target_angular_vel, AngularVelocityPID::current_angular_vel, radToDeg(AngularVelocityPID::current_angle), diff);
+    }
+    printf("Finished: %lf\n\r", diff);
+    this->allMotorStop();
     return;
 }
 
@@ -130,8 +151,10 @@ void RobotController::mainControl(){
       // printf("duty_r %d, duty_l %d\n\r", motor_r.duty, motor_l.duty);
       // printf("cur_LinearVelocityPIDvel %lf tar_vel %lf\n\r", LinearVelocityPID::current_linear_vel, LinearVelocityPID::target_linear_vel);
       // printf("current_distance: %lf angle: %lf\n\r", LinearVelocityPID::current_distance, AngularVelocityPID::current_angle);
-      // this->straight(540);
-      this->turn_right(90);
+      if(this-is_running) this->straight(180);
+      // if(this->is_running) this->turn_left(360*5);
+      // if(this->is_running) this->turn_right(360*5);
+      this->is_running = false;
 
       // 目標速度のみ与える
       // float target_distance = 1000;
