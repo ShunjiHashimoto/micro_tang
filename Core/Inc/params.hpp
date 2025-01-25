@@ -2,6 +2,9 @@
 #define INC_PARAMS_HPP
 #include "main.h"
 
+#define HALF_SECTION	(90)	//半区画の距離
+#define SECTION		(180)
+
 namespace MotorParam {
     // const float Ke = (2*3.1415926/60)*(0.207/1000.0); // 逆起電圧定数[V*s/rad], 0.00002168
     const float Ke = (2*3.1415926/60)*0.207; // 逆起電圧定数[V*s/rad], 0.00002168
@@ -91,4 +94,5 @@ namespace ADCParam {
     const float SENSOR_GAIN_L = 5/1000; // 2.61666 → 1000
     const int SENSOR_COUNT = 4;
 }
+
 #endif // INC_PARAMS_HPP
