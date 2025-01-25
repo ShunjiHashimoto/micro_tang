@@ -18,7 +18,9 @@ void RobotController::motorControl(float target_linear_vel, float target_angular
 
 void RobotController::allMotorStop() {
     LinearVelocityPID::target_linear_vel = 0.0;
+    LinearVelocityPID::calculated_linear_vel = 0.0;
     AngularVelocityPID::target_angular_vel = 0.0;
+    AngularVelocityPID::calculated_angular_vel = 0.0;
     motor_r.Stop();
     motor_l.Stop();
     this->is_running = false;
@@ -58,13 +60,15 @@ void RobotController::straight(float target_distance, bool is_wall_control) { //
       prev_count = current_count;
       float diff = target_distance - LinearVelocityPID::current_distance;
       AngularVelocityPID::w_pid_error_sum = 0.0;
-
-      // 両壁あり
+      
+      // 壁の有無を確認し制御を行う
       int16_t sensor_diff = 0;
+      // 両壁なし
       if(!is_wall_control || photo_trans_sensor.getCurrentADC(2) < 100 && photo_trans_sensor.getCurrentADC(1) < 100) {
           // AngularVelocityPID::target_angular_vel = 0.0;
           printf("others 1: %d, 2: %d, \n\r", photo_trans_sensor.getCurrentADC(1), photo_trans_sensor.getCurrentADC(2));
       }
+      // 両壁あり
       else if(photo_trans_sensor.getCurrentADC(2) > 100 && photo_trans_sensor.getCurrentADC(1) > 100){
           sensor_diff = photo_trans_sensor.getDiffADCBothWall();
           AngularVelocityPID::target_angular_vel = sensor_diff*ADCParam::SENSOR_GAIN;
@@ -82,18 +86,8 @@ void RobotController::straight(float target_distance, bool is_wall_control) { //
           AngularVelocityPID::target_angular_vel = -sensor_diff*ADCParam::SENSOR_GAIN_L;
           printf("left sensor diff %d\n\r", sensor_diff);
       }
-      if(photo_trans_sensor.getCurrentADC(0)>500 && photo_trans_sensor.getCurrentADC(3)>500) {
-        if(photo_trans_sensor.getCurrentADC(1) < 100){
-          this->allMotorStop();
-          this->turn_right(90);
-          LinearVelocityPID::target_linear_vel = v_max;
-        }
-        else if(photo_trans_sensor.getCurrentADC(2) < 100){
-          this->allMotorStop();
-          this->turn_left(90);
-          LinearVelocityPID::target_linear_vel = v_max;
-        }
-      }
+
+      // 目標距離に到達するまで走行し続ける
       if(diff < RobotControllerParam::MIN_DISTANCE_TO_RUN) break;
       // 加速区間
       if(LinearVelocityPID::current_distance < AL){
@@ -133,7 +127,7 @@ void RobotController::turn_right(uint16_t target_deg) {
       diff = (target_rad - abs(prev_angle)) - abs(AngularVelocityPID::current_angle);
       printf("adc_bat: %lf, calculated_linear_vel: %lf, calculated_angular_vel: %lf, motor_r.rotation_speed: %lf, motor_l.rotation_speed: %lf, motor_r.duty: %d, motor_l.duty: %d, target_deg: %d, target_angular_vel: %lf, current_angular_vel: %lf, current_deg: %d, diff: %lf\n\r", Battery::adc_bat, LinearVelocityPID::calculated_linear_vel, AngularVelocityPID::calculated_angular_vel, motor_r.rotation_speed, motor_l.rotation_speed, motor_r.duty, motor_l.duty, target_deg, AngularVelocityPID::target_angular_vel, AngularVelocityPID::current_angular_vel, radToDeg(AngularVelocityPID::current_angle), diff);
     }
-    AngularVelocityPID::current_angle = 0.0;
+    // AngularVelocityPID::current_angle = 0.0;
     printf("Finished: %lf\n\r", diff);
     this->allMotorStop();
     return;
@@ -149,6 +143,7 @@ void RobotController::turn_left(uint16_t target_deg) {
       diff = (target_rad + prev_angle) - AngularVelocityPID::current_angle;
       printf("adc_bat: %lf, calculated_linear_vel: %lf, calculated_angular_vel: %lf, motor_r.rotation_speed: %lf, motor_l.rotation_speed: %lf, motor_r.duty: %d, motor_l.duty: %d, target_deg: %d, target_angular_vel: %lf, current_angular_vel: %lf, current_deg: %d, diff: %lf\n\r", Battery::adc_bat, LinearVelocityPID::calculated_linear_vel, AngularVelocityPID::calculated_angular_vel, motor_r.rotation_speed, motor_l.rotation_speed, motor_r.duty, motor_l.duty, target_deg, AngularVelocityPID::target_angular_vel, AngularVelocityPID::current_angular_vel, radToDeg(AngularVelocityPID::current_angle), diff);
     }
+    // AngularVelocityPID::current_angle = 0.0;
     printf("Finished: %lf\n\r", diff);
     this->allMotorStop();
     return;
@@ -190,21 +185,14 @@ void RobotController::mainControl(){
       // printf("duty_r %d, duty_l %d\n\r", motor_r.duty, motor_l.duty);
       // printf("cur_LinearVelocityPIDvel %lf tar_vel %lf\n\r", LinearVelocityPID::current_linear_vel, LinearVelocityPID::target_linear_vel);
       // printf("current_distance: %lf angle: %lf\n\r", LinearVelocityPID::current_distance, AngularVelocityPID::current_angle);
-      if(this-is_running){
-        this->straight(180*100, true);
+      if(this->is_running){
+        this->straight(HALF_SECTION, true);
+        HAL_Delay(200);
+        this->turn_left(90);
+        HAL_Delay(200);
       }
-      // if(this->is_running) this->turn_left(360*5);
-      // if(this->is_running) this->turn_right(360*5);
-      this->is_running = false;
-
-      for(int i=0; i<4; i++){
-        auto adc_val = photo_trans_sensor.getCurrentADC(i);
-        printf("adc_val[%d]: %d\n\r", i, adc_val);
-      }
-      // printf("Finished 1 loop\n\r");
-      HAL_Delay(200);
       // モード更新し、終了
-      current_mode = mode_manager.getCurrentMode();
+      current_mode = Mode::ModeType::WAIT;
       return;
     }
 
