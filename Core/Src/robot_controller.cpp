@@ -21,6 +21,7 @@ void RobotController::allMotorStop() {
     LinearVelocityPID::calculated_linear_vel = 0.0;
     AngularVelocityPID::target_angular_vel = 0.0;
     AngularVelocityPID::calculated_angular_vel = 0.0;
+    LinearVelocityPID::current_distance = 0.0;
     motor_r.Stop();
     motor_l.Stop();
     this->is_running = false;
@@ -189,6 +190,8 @@ void RobotController::mainControl(){
         this->straight(HALF_SECTION, true);
         HAL_Delay(200);
         this->turn_left(90);
+        HAL_Delay(200);
+        this->straight(HALF_SECTION, true);
         HAL_Delay(200);
       }
       // モード更新し、終了
