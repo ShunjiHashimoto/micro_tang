@@ -16,7 +16,7 @@ extern "C" {
         for (auto& vel : log) {
             vel = roundToTwoDecimalPlaces(vel);
         }
-        vel_log.saveLog(log);
+        // vel_log.saveLog(log);
     }
 }
 
